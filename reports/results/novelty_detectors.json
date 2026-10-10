@@ -1,0 +1,57 @@
+{
+  "fpr_budget": 0.01,
+  "rows": [
+    {
+      "detector": "Isolation Forest",
+      "benign_false_alarms": 0.011843171476656486,
+      "seconds": 0.7,
+      "Botnet": 0.0,
+      "BruteForce": 0.037162162162162164,
+      "DDoS": 0.9457831325301205,
+      "DoS": 0.43975069252077564,
+      "Exfiltration": 0.06896551724137931,
+      "Infiltration": 0.029411764705882353,
+      "PortScan": 0.9788182831661093,
+      "WebAttack": 0.0
+    },
+    {
+      "detector": "LOF (k=10)",
+      "benign_false_alarms": 0.011843171476656486,
+      "seconds": 0.7,
+      "Botnet": 0.20161290322580644,
+      "BruteForce": 0.8817567567567568,
+      "DDoS": 0.9779116465863453,
+      "DoS": 0.9771468144044322,
+      "Exfiltration": 0.5172413793103449,
+      "Infiltration": 0.11764705882352941,
+      "PortScan": 0.9777034559643255,
+      "WebAttack": 0.058394160583941604
+    },
+    {
+      "detector": "LOF (k=30)",
+      "benign_false_alarms": 0.012154833883936919,
+      "seconds": 0.7,
+      "Botnet": 0.16129032258064516,
+      "BruteForce": 0.8851351351351351,
+      "DDoS": 0.9769076305220884,
+      "DoS": 0.9771468144044322,
+      "Exfiltration": 0.5172413793103449,
+      "Infiltration": 0.2647058823529412,
+      "PortScan": 0.979933110367893,
+      "WebAttack": 0.029197080291970802
+    },
+    {
+      "detector": "Autoencoder",
+      "benign_false_alarms": 0.010534189366078663,
+      "seconds": 6.7,
+      "Botnet": 0.3548387096774194,
+      "BruteForce": 0.23986486486486486,
+      "DDoS": 0.9769076305220884,
+      "DoS": 0.9674515235457064,
+      "Exfiltration": 0.5517241379310345,
+      "Infiltration": 0.0,
+      "PortScan": 0.9777034559643255,
+      "WebAttack": 0.0
+    }
+  ]
+}

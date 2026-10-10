@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-10-10T15:11:29+00:00",
+  "model": "hist_gb",
+  "strategy": "smote",
+  "benign_fpr_budget": 0.01,
+  "anomaly_detector_false_alarm_rate": 0.011843171476656486,
+  "mean_classifier_detection": 0.4052420487740801,
+  "mean_hybrid_detection": 0.5906929009891934,
+  "rows": [
+    {
+      "held_out_family": "Botnet",
+      "test_flows": 124,
+      "classifier_detection": 0.016129032258064516,
+      "hybrid_detection": 0.21774193548387097,
+      "caught_only_by_anomaly_detector": 0.20161290322580644,
+      "most_common_label_given": "WebAttack",
+      "classifier_false_alarm_rate": 0.0023686342953312973,
+      "hybrid_false_alarm_rate": 0.014149473290531697
+    },
+    {
+      "held_out_family": "BruteForce",
+      "test_flows": 296,
+      "classifier_detection": 0.23986486486486486,
+      "hybrid_detection": 0.8817567567567568,
+      "caught_only_by_anomaly_detector": 0.6418918918918919,
+      "most_common_label_given": "DoS",
+      "classifier_false_alarm_rate": 0.0054852583681356355,
+      "hybrid_false_alarm_rate": 0.017079099918967774
+    },
+    {
+      "held_out_family": "DDoS",
+      "test_flows": 996,
+      "classifier_detection": 0.964859437751004,
+      "hybrid_detection": 0.9779116465863453,
+      "caught_only_by_anomaly_detector": 0.013052208835341365,
+      "most_common_label_given": "DoS",
+      "classifier_false_alarm_rate": 0.003677616405909119,
+      "hybrid_false_alarm_rate": 0.015396122919653431
+    },
+    {
+      "held_out_family": "DoS",
+      "test_flows": 1444,
+      "classifier_detection": 0.7825484764542936,
+      "hybrid_detection": 0.9771468144044322,
+      "caught_only_by_anomaly_detector": 0.1945983379501385,
+      "most_common_label_given": "WebAttack",
+      "classifier_false_alarm_rate": 0.00635791310852085,
+      "hybrid_false_alarm_rate": 0.01795175465935299
+    },
+    {
+      "held_out_family": "Exfiltration",
+      "test_flows": 29,
+      "classifier_detection": 0.5172413793103449,
+      "hybrid_detection": 0.5172413793103449,
+      "caught_only_by_anomaly_detector": 0.0,
+      "most_common_label_given": "DoS",
+      "classifier_false_alarm_rate": 0.0023063018138752105,
+      "hybrid_false_alarm_rate": 0.014024808327619523
+    },
+    {
+      "held_out_family": "Infiltration",
+      "test_flows": 34,
+      "classifier_detection": 0.0,
+      "hybrid_detection": 0.11764705882352941,
+      "caught_only_by_anomaly_detector": 0.11764705882352941,
+      "most_common_label_given": "Benign",
+      "classifier_false_alarm_rate": 0.0028672941469799914,
+      "hybrid_false_alarm_rate": 0.014710465623636476
+    },
+    {
+      "held_out_family": "PortScan",
+      "test_flows": 897,
+      "classifier_detection": 0.7212931995540691,
+      "hybrid_detection": 0.9777034559643255,
+      "caught_only_by_anomaly_detector": 0.2564102564102564,
+      "most_common_label_given": "DDoS",
+      "classifier_false_alarm_rate": 0.002617964221155644,
+      "hybrid_false_alarm_rate": 0.014398803216356042
+    },
+    {
+      "held_out_family": "WebAttack",
+      "test_flows": 137,
+      "classifier_detection": 0.0,
+      "hybrid_detection": 0.058394160583941604,
+      "caught_only_by_anomaly_detector": 0.058394160583941604,
+      "most_common_label_given": "Benign",
+      "classifier_false_alarm_rate": 0.0014959795549460825,
+      "hybrid_false_alarm_rate": 0.013276818550146481
+    }
+  ]
+}

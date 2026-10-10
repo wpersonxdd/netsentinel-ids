@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+build/
+dist/
+
+# Data and generated outputs (regenerate with `python -m nids all`)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+artifacts/*
+!artifacts/.gitkeep
+
+# Keep the generated report and figures in git: they are part of the submission.
+# reports/
+
+# Editors / OS / local tooling
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
