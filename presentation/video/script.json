@@ -17,7 +17,7 @@
       "file": "scenes/02_imbalance.html",
       "lines": [
         "Think of airport security: thousands of ordinary passengers, and only now and then someone dangerous.",
-        "In the real traffic I used, the rarest attack is one connection in forty-five thousand.",
+        "In the real traffic I used, there are forty-five thousand normal connections for every connection of the rarest attack.",
         "A lazy guard who waves everyone through is right almost all the time, and completely useless.",
         "A model trained the naive way becomes that lazy guard: it looks accurate, and catches nothing."
       ]
@@ -47,7 +47,7 @@
       "lines": [
         "To prove it on real traffic, I used CIC-IDS2017 from the Canadian Institute for Cybersecurity.",
         "Five working days of a real network: 2.8 million flows, with attacks staged on different days.",
-        "Nine attack families, and forty-five thousand to one between the biggest and the smallest.",
+        "Eight attack families, and forty-five thousand normal flows for every flow of the rarest attack.",
         "The raw files are messy, so the pipeline repairs them automatically: a twelve-hour clock with no A M or P M, almost three hundred thousand empty rows, and three hundred thousand duplicates."
       ]
     },

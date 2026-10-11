@@ -50,7 +50,7 @@ Two evaluations, each with its own full report:
 
 | | Data | Report |
 |---|---|---|
-| **Real traffic** | **CIC-IDS2017**: 5 days of labelled traffic, 2.8 M flows → 2.52 M after cleaning → stratified 606k sample, 9 families, largest:smallest ≈ 45,000:1 | [`reports/cicids2017/REPORT.md`](reports/cicids2017/REPORT.md) |
+| **Real traffic** | **CIC-IDS2017**: 5 days of labelled traffic, 2.8 M flows → 2.52 M after cleaning → stratified 606k sample, 8 attack families + benign, benign:rarest ≈ 45,000:1 | [`reports/cicids2017/REPORT.md`](reports/cicids2017/REPORT.md) |
 | Synthetic stress test | 100k generated flows with deliberate overlap, label noise and an injected new attack family | [`reports/REPORT.md`](reports/REPORT.md) |
 
 When the official DataNova data is released, `python -m nids all --data <folder>` produces the same report for it.
@@ -62,7 +62,7 @@ stratified-bootstrap CIs:
 
 | Metric | No imbalance handling | + SMOTE | + novelty detector (deployed) |
 |---|---|---|---|
-| Macro-F1, all 9 families | 0.766 [0.763, 0.768] | **0.973** [0.945, 0.992] | 0.973 [0.945, 0.991] |
+| Macro-F1, all 9 classes (benign + 8 families) | 0.766 [0.763, 0.768] | **0.973** [0.945, 0.992] | 0.973 [0.945, 0.991] |
 | Macro-F1, families with ≥ 10 test flows | 0.984 [0.981, 0.988] | **0.989** [0.986, 0.992] | 0.988 [0.986, 0.991] |
 | Detection rate (attacks alerted) | 99.55% | **99.87%** | 99.87% |
 | False-alarm rate (benign alerted) | **0.09%** | 0.10% | 1.18% |
@@ -78,7 +78,7 @@ report, and the tiny families are given as counts because no bootstrap can expre
 | Unseen attack families (leave-one-attack-out) | Classifier alone: **5%** of a never-seen family's flows alerted → with the LOF novelty detector **33%**. Web attacks 3% → 87%, DoS 3% → 71%, DDoS 24% → 40%; port scans, brute force and botnet beacons stay almost invisible at flow level (0–3%) |
 | Drift (train on the past, test on the future) | Macro-F1 0.998 on history (Mon – Thu morning) → **0.182** on Thursday afternoon and Friday → **0.925** after retraining with 10% labelled recent flows. All three label-free drift signals fired (alerted-traffic PSI 5.3, prediction-mix PSI 0.17, Unknown-Anomaly rate 0.9% → 5.4%). Families first seen in the future: DDoS 61% alerted before retraining → 99.9% recall after; PortScan 38% → 99.6% |
 | Data audit | 288,602 empty rows, 308,218 duplicates, a 12-hour clock without AM/PM and mixed date formats repaired; no ID/clock-like columns; no single feature reaches more than 37% of the full model (one flagged feature isolates one family) |
-| Conformal guarantees (new) | 7 of 9 families get a ≥ 90% coverage guarantee; the classifier is confident enough that **100% of prediction sets hold a single family**. Heartbleed and Infiltration have 1 and 4 calibration flows, below the 9 a 90% guarantee needs, and the report says so instead of faking one |
+| Conformal guarantees (new) | 7 of 9 classes get a ≥ 90% coverage guarantee; the classifier is confident enough that **100% of prediction sets hold a single family**. Heartbleed and Infiltration have 1 and 4 calibration flows, below the 9 a 90% guarantee needs, and the report says so instead of faking one |
 | Alert triage | 22,601 flow alerts → **483 incidents** (47× fewer): 25 P1, 21 P2, 436 P3 (mostly single-flow novelty leads) |
 | Feedback loop | Simulated analyst-day (100 incidents → 20,864 labelled flows) + `nids retrain`: on the 100,332 test flows nobody reviewed, macro-F1 **+0.026 [+0.004, +0.049]**, false alarms +0.17 pp |
 | Throughput | ≈ 25,000 flows/s (classifier + novelty detector, one laptop) |

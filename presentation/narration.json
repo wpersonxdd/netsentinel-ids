@@ -5,7 +5,7 @@
   },
   {
     "image": "docs/media/slides/02_problem.png",
-    "text": "A network carries millions of normal connections, and attacks hide among them. In the real traffic I used, the rarest attack family is one flow in forty-five thousand. That breaks naive machine learning: a detector that calls everything normal looks eighty percent accurate and catches zero attacks."
+    "text": "A network carries millions of normal connections, and attacks hide among them. In the real traffic I used, there are forty-five thousand normal flows for every flow of the rarest attack. That breaks naive machine learning: a detector that calls everything normal looks eighty percent accurate and catches zero attacks."
   },
   {
     "image": "docs/media/slides/03_answers.png",
@@ -17,7 +17,7 @@
   },
   {
     "image": "docs/media/slides/05_data.png",
-    "text": "For real traffic I used CIC-IDS2017 from the Canadian Institute for Cybersecurity: 2.8 million flows over five working days, nine attack families, and forty-five thousand to one between the largest and the smallest family. The data is messy, and the pipeline repairs it automatically: a twelve-hour clock without A M or P M, almost three hundred thousand empty rows, and three hundred thousand duplicates."
+    "text": "For real traffic I used CIC-IDS2017 from the Canadian Institute for Cybersecurity: 2.8 million flows over five working days, eight attack families, and forty-five thousand normal flows for every flow of the rarest attack. The data is messy, and the pipeline repairs it automatically: a twelve-hour clock without A M or P M, almost three hundred thousand empty rows, and three hundred thousand duplicates."
   },
   {
     "image": "docs/media/slides/06_results.png",

@@ -15,214 +15,214 @@ This is NetSentinel, my solution for DataNova problem DN-CY-01: a system that fi
 Think of airport security: thousands of ordinary passengers, and only now and then someone dangerous.
 
 5
-00:00:28,848 --> 00:00:33,936
-In the real traffic I used, the rarest attack is one connection in forty-five thousand.
+00:00:28,848 --> 00:00:34,986
+In the real traffic I used, there are forty-five thousand normal connections for every connection of the rarest attack.
 
 6
-00:00:34,287 --> 00:00:39,520
+00:00:35,336 --> 00:00:40,569
 A lazy guard who waves everyone through is right almost all the time, and completely useless.
 
 7
-00:00:39,870 --> 00:00:45,439
+00:00:40,920 --> 00:00:46,489
 A model trained the naive way becomes that lazy guard: it looks accurate, and catches nothing.
 
 8
-00:00:47,639 --> 00:00:51,078
+00:00:48,688 --> 00:00:52,127
 So NetSentinel has to solve four problems at once.
 
 9
-00:00:51,428 --> 00:00:56,912
+00:00:52,477 --> 00:00:57,961
 Attacks are rare, so training is rebalanced: the model sees rare attacks more often.
 
 10
-00:00:57,262 --> 00:01:04,220
+00:00:58,311 --> 00:01:05,269
 New attacks appear, so a second detector learns only what normal traffic looks like, and flags anything unfamiliar.
 
 11
-00:01:04,570 --> 00:01:09,504
+00:01:05,619 --> 00:01:10,553
 Tactics change, so a drift monitor watches the traffic and asks for retraining.
 
 12
-00:01:09,853 --> 00:01:16,516
+00:01:10,902 --> 00:01:17,565
 And analysts drown in alerts, so alerts become explained incidents, and every analyst decision teaches the model.
 
 13
-00:01:18,716 --> 00:01:20,545
+00:01:19,765 --> 00:01:21,594
 Here is how it works.
 
 14
-00:01:20,895 --> 00:01:26,294
+00:01:21,944 --> 00:01:27,343
 Network flow records come in, one row per connection, and are cleaned and checked for leaks.
 
 15
-00:01:26,644 --> 00:01:33,257
+00:01:27,693 --> 00:01:34,306
 Two detectors look at every flow: a rebalanced ensemble for known attacks, and a novelty detector for the unknown.
 
 16
-00:01:33,607 --> 00:01:38,751
+00:01:34,656 --> 00:01:39,800
 Their alerts become incidents, each with a priority, a reason, and a first response.
 
 17
-00:01:39,100 --> 00:01:46,058
+00:01:40,149 --> 00:01:47,107
 The analyst confirms or rejects them, and the model retrains on those decisions. One command runs the whole loop.
 
 18
-00:01:48,259 --> 00:01:56,332
+00:01:49,308 --> 00:01:57,381
 To prove it on real traffic, I used CIC-IDS2017 from the Canadian Institute for Cybersecurity.
 
 19
-00:01:56,682 --> 00:02:02,935
+00:01:57,731 --> 00:02:03,984
 Five working days of a real network: 2.8 million flows, with attacks staged on different days.
 
 20
-00:02:03,285 --> 00:02:08,284
-Nine attack families, and forty-five thousand to one between the biggest and the smallest.
+00:02:04,334 --> 00:02:09,668
+Eight attack families, and forty-five thousand normal flows for every flow of the rarest attack.
 
 21
-00:02:08,634 --> 00:02:19,706
+00:02:10,018 --> 00:02:21,090
 The raw files are messy, so the pipeline repairs them automatically: a twelve-hour clock with no A M or P M, almost three hundred thousand empty rows, and three hundred thousand duplicates.
 
 22
-00:02:21,906 --> 00:02:26,220
+00:02:23,290 --> 00:02:27,604
 On 121 thousand test flows the system had never seen,
 
 23
-00:02:26,570 --> 00:02:30,249
+00:02:27,954 --> 00:02:31,633
 99.9 percent of attack flows raise an alert,
 
 24
-00:02:30,599 --> 00:02:34,168
+00:02:31,983 --> 00:02:35,552
 and only one normal flow in a thousand raises a false alarm.
 
 25
-00:02:34,517 --> 00:02:42,475
+00:02:35,901 --> 00:02:43,859
 Macro F1, which weights every attack family equally, rises from 0.77 to 0.97 with rebalancing.
 
 26
-00:02:42,825 --> 00:02:52,118
+00:02:44,209 --> 00:02:53,502
 But to be honest: most of that jump comes from just nine flows of the two rarest families. On the others, the gain is small, but statistically real.
 
 27
-00:02:54,318 --> 00:02:56,527
+00:02:55,702 --> 00:02:57,911
 Now the most important result.
 
 28
-00:02:56,877 --> 00:03:01,006
+00:02:58,261 --> 00:03:02,390
 Shuffle the data randomly, and the score is 0.97.
 
 29
-00:03:01,356 --> 00:03:05,945
+00:03:02,740 --> 00:03:07,329
 Keep each attack session on one side, and it drops to 0.89.
 
 30
-00:03:06,295 --> 00:03:11,129
+00:03:07,679 --> 00:03:12,513
 Train on the past and test on the future, and it collapses to 0.18.
 
 31
-00:03:11,478 --> 00:03:22,115
+00:03:12,862 --> 00:03:23,499
 Every attack in this dataset happens on a single day, so a model trained on Monday to Thursday has never seen Friday's attacks. A supervised detector only knows yesterday's attacks.
 
 32
-00:03:24,315 --> 00:03:27,239
+00:03:25,699 --> 00:03:28,623
 That is why NetSentinel has a second detector.
 
 33
-00:03:27,589 --> 00:03:32,953
+00:03:28,973 --> 00:03:34,337
 It learns only what normal traffic looks like, and flags flows that look like nothing it knows.
 
 34
-00:03:33,302 --> 00:03:37,206
+00:03:34,686 --> 00:03:38,590
 To test it, I hide one attack family from training at a time.
 
 35
-00:03:37,556 --> 00:03:48,543
+00:03:38,940 --> 00:03:49,927
 Web attacks go from 3 to 87 percent caught, denial of service from 3 to 71 percent, and on average from 5 to 33 percent, for about one percent more false alarms.
 
 36
-00:03:48,894 --> 00:03:54,872
+00:03:50,278 --> 00:03:56,256
 Port scans and botnets still look normal at flow level. That is a real limit, and I report it.
 
 37
-00:03:57,072 --> 00:04:00,006
+00:03:58,456 --> 00:04:01,390
 Attackers also change tactics over time.
 
 38
-00:04:00,356 --> 00:04:07,724
+00:04:01,740 --> 00:04:09,108
 Trained on the first days, the model scores 0.998 on them, but only 0.18 on the days that follow.
 
 39
-00:04:08,074 --> 00:04:16,722
+00:04:09,458 --> 00:04:18,106
 The drift monitor notices this without any labels: the alerted traffic shifts, and unknown anomalies rise from 0.9 to 5.4 percent.
 
 40
-00:04:17,072 --> 00:04:22,735
+00:04:18,456 --> 00:04:24,119
 After retraining on just ten percent of the new flows, the score recovers to 0.93.
 
 41
-00:04:24,935 --> 00:04:28,169
+00:04:26,319 --> 00:04:29,553
 Detection is only useful if a person can act on it.
 
 42
-00:04:28,519 --> 00:04:33,947
+00:04:29,903 --> 00:04:35,331
 On the test traffic, the models raised 22,601 flow alerts.
 
 43
-00:04:34,297 --> 00:04:43,039
+00:04:35,681 --> 00:04:44,423
 The console groups them into 483 incidents, by attack family, shared endpoint and time: forty-seven times fewer things to open.
 
 44
-00:04:43,390 --> 00:04:51,133
+00:04:44,774 --> 00:04:52,517
 Here it scores five thousand new flows: 952 alerts become 60 incidents, fourteen of them top priority.
 
 45
-00:04:53,333 --> 00:04:58,236
+00:04:54,717 --> 00:04:59,620
 Opening an incident shows why it was raised: the features furthest from normal traffic.
 
 46
-00:04:58,586 --> 00:05:04,744
+00:04:59,970 --> 00:05:06,128
 It shows how sure the model is, as a set of possible families with a ninety percent guarantee for each family.
 
 47
-00:05:05,095 --> 00:05:07,399
+00:05:06,479 --> 00:05:08,783
 It suggests a first response.
 
 48
-00:05:07,749 --> 00:05:12,533
+00:05:09,133 --> 00:05:13,917
 And one analyst decision labels the whole incident, so the model can retrain on it.
 
 49
-00:05:14,732 --> 00:05:17,481
+00:05:16,116 --> 00:05:18,865
 Every number in this project can be checked.
 
 50
-00:05:17,831 --> 00:05:20,695
+00:05:19,215 --> 00:05:22,079
 Each headline result has a confidence interval.
 
 51
-00:05:21,045 --> 00:05:26,293
+00:05:22,429 --> 00:05:27,677
 The same model is tested three ways: random, by session, and over time.
 
 52
-00:05:26,643 --> 00:05:32,541
+00:05:28,027 --> 00:05:33,925
 An automatic audit looks for shortcuts and leaks before training, and eighty-one automated tests guard the code.
 
 53
-00:05:34,742 --> 00:05:37,126
+00:05:36,126 --> 00:05:38,510
 NetSentinel has clear limits.
 
 54
-00:05:37,476 --> 00:05:46,709
+00:05:38,860 --> 00:05:48,093
 Port scans and botnets look normal at flow level, the novelty detector costs about one percent extra false alarms, and the data is from 2017.
 
 55
-00:05:47,059 --> 00:05:56,861
+00:05:48,443 --> 00:05:58,245
 Next, I would pair it with payload inspection such as Zeek or Suricata, tune the alert budget to the size of the team, and run it on the official DataNova data with a single command.
 
 56
-00:05:59,061 --> 00:06:06,474
+00:06:00,445 --> 00:06:07,858
 NetSentinel finds rare attacks, flags new ones, and keeps analysts in the loop, with honest numbers on real traffic.
 
 57
-00:06:06,824 --> 00:06:11,353
+00:06:08,208 --> 00:06:12,737
 The code, the report and this video are on GitHub. Thank you.
 
