@@ -1,0 +1,41 @@
+# CIC-IDS2017 (Canadian Institute for Cybersecurity), real labelled traffic captured 3-7 July 2017.
+# Download "GeneratedLabelledFlows.zip" from https://www.unb.ca/cic/datasets/ids-2017.html and extract the
+# eight CSVs into data/raw/cicids2017/. Then:  python -m nids all --config configs/cicids2017.yaml
+#
+# Everything not set here comes from configs/default.yaml's defaults (built into nids.config).
+
+seed: 42
+
+paths:
+  artifacts: artifacts/cicids2017
+  reports: reports/cicids2017
+
+data:
+  path: data/raw/cicids2017
+  # Dataset quirks:
+  time_dayfirst: true            # dates are day/month/year (7/7/2017 = 7 July)
+  time_add_12h_before_hour: 8    # afternoon flows are written 1:00-5:00 without PM; capture ran 08:00-18:00
+  # 2.5M flows after cleaning. A stratified 600k sample keeps every family; families below 5,000 flows are kept
+  # whole, so the rarest attacks (36 Infiltration, 11 Heartbleed) stay learnable and testable. That over-represents
+  # them relative to benign traffic, which makes their test precision somewhat optimistic (stated in the report).
+  max_rows: 600000
+  cache: true                    # reuse the prepared 600k-flow dataset across commands (data/processed/)
+  min_per_class: 5000
+
+benchmark:
+  max_train_rows: 150000         # 20 configurations; the final model is trained on the full training split
+
+protocols:
+  session_window: 5min           # CIC attacks are long single-attacker campaigns; 5-minute sessions keep groups
+                                 # small enough for a stratified grouped split
+
+triage:
+  severity:                      # defaults cover the CIC families; listed here for clarity
+    PortScan: low
+    BruteForce: medium
+    DoS: high
+    WebAttack: high
+    DDoS: critical
+    Botnet: critical
+    Infiltration: critical
+    Exploit: critical

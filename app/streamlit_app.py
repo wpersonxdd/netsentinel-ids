@@ -1,6 +1,9 @@
 """NetSentinel analyst console: alert triage, model performance, novel attacks and drift.
 
 Run from the project root:  streamlit run app/streamlit_app.py
+
+Every trained run is offered in the sidebar: the synthetic demo (artifacts/, reports/) and each named run such as
+CIC-IDS2017 (artifacts/cicids2017/, reports/cicids2017/, configs/cicids2017.yaml).
 """
 
 from __future__ import annotations
@@ -23,13 +26,26 @@ from nids.feedback import DECISIONS, META_COLUMNS, NEW_FAMILY, append_feedback, 
 from nids.models import MODEL_LABELS, STRATEGY_LABELS  # noqa: E402
 from nids.triage import group_incidents  # noqa: E402
 
-ARTIFACTS = ROOT / "artifacts"
-REPORTS = ROOT / "reports"
-FIGURES = REPORTS / "figures"
-MODEL_PATH = ARTIFACTS / "netsentinel_model.joblib"
-ALERTS_PATH = ARTIFACTS / "alerts_test.csv"
-FEEDBACK_PATH = ARTIFACTS / "analyst_feedback.csv"
-DEMO_TRAFFIC = ROOT / "data" / "raw" / "demo_new_traffic.csv"
+MODEL_FILE = "netsentinel_model.joblib"
+RUN_LABELS = {"cicids2017": "CIC-IDS2017 (real traffic)"}
+
+
+def discover_runs() -> dict[str, dict[str, Path]]:
+    """Trained runs: named sub-folders of artifacts/ first (real data), then the synthetic demo."""
+    runs: dict[str, dict[str, Path]] = {}
+    artifacts = ROOT / "artifacts"
+    if artifacts.exists():
+        for d in sorted(p for p in artifacts.iterdir() if p.is_dir() and (p / MODEL_FILE).exists()):
+            config = ROOT / "configs" / f"{d.name}.yaml"
+            runs[RUN_LABELS.get(d.name, d.name)] = {
+                "artifacts": d, "reports": ROOT / "reports" / d.name,
+                "config": config if config.exists() else ROOT / "configs" / "default.yaml",
+                "demo": ROOT / "data" / "raw" / f"demo_{d.name}.csv"}
+    if (artifacts / MODEL_FILE).exists():
+        runs["Synthetic demo data"] = {"artifacts": artifacts, "reports": ROOT / "reports",
+                                       "config": ROOT / "configs" / "default.yaml",
+                                       "demo": ROOT / "data" / "raw" / "demo_new_traffic.csv"}
+    return runs
 
 PRIORITY_BADGE = {"P1": "🔴 P1", "P2": "🟠 P2", "P3": "🟡 P3", "P4": "⚪ P4"}
 
@@ -58,8 +74,8 @@ def load_alerts(path: str) -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner="Scoring traffic…")
-def score_traffic(raw_bytes: bytes) -> tuple[pd.DataFrame, pd.DataFrame]:
-    bundle = load_bundle(str(MODEL_PATH))
+def score_traffic(raw_bytes: bytes, model_path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+    bundle = load_bundle(model_path)
     return bundle.score_frame(pd.read_csv(io.BytesIO(raw_bytes), low_memory=False))
 
 
@@ -72,10 +88,11 @@ def load_feedback() -> pd.DataFrame:
 
 def project_config() -> dict:
     """The project config with paths made absolute, so the console works from any working directory."""
-    cfg = load_config(ROOT / "configs" / "default.yaml")
+    cfg = load_config(CONFIG_PATH)
     cfg["paths"] = {k: str(ROOT / v) if not Path(v).is_absolute() else v for k, v in cfg["paths"].items()}
     if not Path(cfg["data"]["path"]).is_absolute():
         cfg["data"]["path"] = str(ROOT / cfg["data"]["path"])
+    cfg["data"]["cache_dir"] = str(ROOT / cfg["data"].get("cache_dir", "data/processed"))
     return cfg
 
 
@@ -97,18 +114,30 @@ def figure(name: str, caption: str | None = None) -> None:
 # sidebar
 # --------------------------------------------------------------------------------------------------
 
-if not MODEL_PATH.exists():
+RUNS = discover_runs()
+if not RUNS:
     st.title("🛡️ NetSentinel")
     st.warning("No trained model yet. From the project root run:")
     st.code("python -m nids all", language="bash")
     st.stop()
 
+with st.sidebar:
+    st.title("🛡️ NetSentinel")
+    st.caption("Imbalance-aware network intrusion detection")
+    run_name = st.selectbox("Dataset / trained run", list(RUNS))
+
+RUN = RUNS[run_name]
+ARTIFACTS, REPORTS, CONFIG_PATH, DEMO_TRAFFIC = RUN["artifacts"], RUN["reports"], RUN["config"], RUN["demo"]
+FIGURES = REPORTS / "figures"
+MODEL_PATH = ARTIFACTS / MODEL_FILE
+ALERTS_PATH = ARTIFACTS / "alerts_test.csv"
+FEEDBACK_PATH = ARTIFACTS / "analyst_feedback.csv"
+SCORED_KEY, RETRAIN_KEY = f"scored::{run_name}", f"retrain_result::{run_name}"
+
 bundle = load_bundle(str(MODEL_PATH))
 meta = bundle.metadata
 
 with st.sidebar:
-    st.title("🛡️ NetSentinel")
-    st.caption("Imbalance-aware network intrusion detection")
     source = st.radio("Alert source", ["Test-set alerts", "Score a traffic file"], horizontal=False)
     alerts = pd.DataFrame()
     source_name = "test-set"
@@ -122,11 +151,10 @@ with st.sidebar:
         use_demo = DEMO_TRAFFIC.exists() and st.button("Use bundled demo traffic", width="stretch")
         raw = upload.getvalue() if upload else (DEMO_TRAFFIC.read_bytes() if use_demo else None)
         if raw is not None:
-            st.session_state["scored"] = score_traffic(raw)
-            st.session_state["scored_name"] = upload.name if upload else DEMO_TRAFFIC.name
-        if "scored" in st.session_state:
-            alerts, flows = st.session_state["scored"]
-            source_name = st.session_state["scored_name"]
+            st.session_state[SCORED_KEY] = (score_traffic(raw, str(MODEL_PATH)),
+                                            upload.name if upload else DEMO_TRAFFIC.name)
+        if SCORED_KEY in st.session_state:
+            (alerts, flows), source_name = st.session_state[SCORED_KEY]
             st.success(f"{len(flows):,} flows scored → {len(alerts):,} alerts")
 
     st.divider()
@@ -203,6 +231,10 @@ with tab_queue:
             right.bar_chart(unit["priority"].value_counts().sort_index(), height=200)
 
         def explanation_block(row: pd.Series, title: str) -> None:
+            if "possible_families" in row.index and pd.notna(row["possible_families"]) and bundle.conformal is not None:
+                st.markdown(f"**Possible families:** {row['possible_families']}  \n"
+                            f"<small>Conformal prediction set: for every family, the true one is in such sets for "
+                            f"≥ {1 - bundle.conformal.alpha:.0%} of flows.</small>", unsafe_allow_html=True)
             why, act = st.columns([3, 2])
             with why:
                 st.markdown(f"**{title}**")
@@ -283,9 +315,9 @@ with tab_queue:
         elif mode == "Flow alerts" and len(view):
             table = view.copy()
             table["priority"] = table["priority"].map(PRIORITY_BADGE).fillna(table["priority"])
-            columns = [c for c in ["alert_id", "priority", "predicted_class", "confidence", "anomaly_score",
-                                   "severity", "timestamp", "src_ip", "dst_ip", "dst_port", "incident_id",
-                                   "needs_review", "status"] if c in table.columns]
+            columns = [c for c in ["alert_id", "priority", "predicted_class", "possible_families", "confidence",
+                                   "anomaly_score", "severity", "timestamp", "src_ip", "dst_ip", "dst_port",
+                                   "incident_id", "needs_review", "status"] if c in table.columns]
             st.caption("Select a row to investigate it.")
             event = st.dataframe(
                 table[columns], hide_index=True, width="stretch", height=360, on_select="rerun",
@@ -297,7 +329,7 @@ with tab_queue:
                     "anomaly_score": st.column_config.NumberColumn("Anomaly score", format="%.2f"),
                     "needs_review": st.column_config.CheckboxColumn("Review"),
                     "dst_port": st.column_config.NumberColumn("Port", format="%d"),
-                    "incident_id": "Incident",
+                    "incident_id": "Incident", "possible_families": "Possible families",
                 },
             )
             rows = event.selection.rows if event and event.selection else []
@@ -338,15 +370,15 @@ with tab_queue:
                 result = run_retrain(project_config(), FEEDBACK_PATH, MODEL_PATH)
             st.cache_resource.clear()
             st.cache_data.clear()
-            st.session_state["retrain_result"] = result
+            st.session_state[RETRAIN_KEY] = result
             st.rerun()
         r2.download_button("⬇ Analyst feedback (CSV, with features)",
                            FEEDBACK_PATH.read_bytes() if FEEDBACK_PATH.exists() else b"",
                            file_name="analyst_feedback.csv", mime="text/csv", width="stretch", disabled=fb.empty)
         r3.download_button("⬇ Filtered alerts (CSV)", view.to_csv(index=False).encode("utf-8"),
                            file_name="netsentinel_alerts.csv", mime="text/csv", width="stretch")
-        if "retrain_result" in st.session_state:
-            res = st.session_state["retrain_result"]
+        if RETRAIN_KEY in st.session_state:
+            res = st.session_state[RETRAIN_KEY]
             before, after = res["metrics"]["before"], res["metrics"]["after"]
             st.success(f"Retrained and deployed. Previous model archived to `{res['artifacts']['archived_previous']}`. "
                        f"Compared on {res['evaluation']['evaluated_flows']:,} test flows no analyst reviewed:")
@@ -377,10 +409,12 @@ with tab_model:
     else:
         base, clf, hyb = (final["metrics"][k] for k in ("baseline", "classifier", "hybrid"))
         detector = "Local Outlier Factor" if final.get("novelty_method", "lof") == "lof" else "Isolation Forest"
+        compare = final.get("comparison_strategy", "none")
+        compare_text = "no imbalance handling" if compare == "none" else STRATEGY_LABELS[compare]
+        compare_col = f"F1, {compare_text}"
         st.markdown(f"**Deployed:** {MODEL_LABELS[final['model']]} + {STRATEGY_LABELS[final['strategy']]} with a "
                     f"{detector} novelty detector. Metrics on the held-out test set "
-                    f"({final['dataset']['split']['test']:,} flows); deltas vs. the same model without imbalance "
-                    "handling.")
+                    f"({final['dataset']['split']['test']:,} flows); deltas vs. the same model with {compare_text}.")
         m = st.columns(5)
         m[0].metric("Macro-F1", num(hyb["macro_f1"]), f"{hyb['macro_f1'] - base['macro_f1']:+.3f}")
         if hyb.get("rare_macro_f1") is not None and base.get("rare_macro_f1") is not None:
@@ -393,9 +427,9 @@ with tab_model:
         m[4].metric("Throughput", f"{1e6 / final['predict_ms_per_1k_flows']:,.0f} flows/s")
 
         per_class = pd.DataFrame(clf["per_class"]).T
-        per_class["F1 without imbalance handling"] = pd.DataFrame(base["per_class"]).T["f1"]
+        per_class[compare_col] = pd.DataFrame(base["per_class"]).T["f1"]
         st.dataframe(
-            per_class[["support", "precision", "recall", "f1", "pr_auc", "F1 without imbalance handling"]],
+            per_class[["support", "precision", "recall", "f1", "pr_auc", compare_col]],
             width="stretch",
             column_config={
                 "support": st.column_config.NumberColumn("Test flows", format="%d"),
@@ -403,7 +437,7 @@ with tab_model:
                 "recall": st.column_config.NumberColumn("Recall", format="%.3f"),
                 "f1": st.column_config.NumberColumn("F1", format="%.3f"),
                 "pr_auc": st.column_config.NumberColumn("PR-AUC", format="%.3f"),
-                "F1 without imbalance handling": st.column_config.NumberColumn(format="%.3f"),
+                compare_col: st.column_config.NumberColumn(format="%.3f"),
             },
         )
         a, b = st.columns(2)

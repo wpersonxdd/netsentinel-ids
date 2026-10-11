@@ -1,7 +1,12 @@
 # Presentation outline, demo script and judge Q&A
 
-Target: **10 slides, 6–7 minutes + 3-minute live demo**. Every number below comes from `reports/REPORT.md`.
-Regenerate it on the official data and update the slides from it.
+Finished deck: [`NetSentinel_slides.pdf`](NetSentinel_slides.pdf) (14 slides; sources and speaker notes in
+`presentation/project/slides/`), narrated video: [`media/NetSentinel_demo.mp4`](media/NetSentinel_demo.mp4).
+The outline below is the talk plan the deck was built from.
+
+Target: **10 slides, 6–7 minutes + 3-minute live demo**. Lead with the **real-traffic** numbers
+(`reports/cicids2017/REPORT.md`, CIC-IDS2017); use the synthetic report (`reports/REPORT.md`) as the stress test.
+Regenerate both on the official data when it is released and update the slides from them.
 
 ## Slides
 
@@ -12,6 +17,9 @@ Regenerate it on the official data and update the slides from it.
 | 3 | Data and leakage guards | Format-agnostic loader; label families; IPs/IDs/timestamps removed from features; duplicates removed before split; resampling inside training folds only | Pipeline diagram (README mermaid) |
 | 4 | 20 configurations, one honest winner | 5 models × 4 imbalance strategies on validation; winner picked by macro-F1; test touched once | `benchmark_macro_f1.png` |
 | 5 | Minority classes, before vs. after | Same model, same test set, with and without imbalance handling; rare-class F1 gain | `per_class_f1.png` + headline table |
+| 5a | Real traffic: CIC-IDS2017 | 2.8 M real flows, 9 families; quirks repaired (12-hour clock, empty rows, duplicates). Headline: macro-F1 0.766 → 0.973, *but* on measurable families only +0.005: the jump is 9 flows of Heartbleed/Infiltration (2/2 and 5/7 found vs 0). Say it before the judges do | `reports/cicids2017/figures/per_class_f1.png` |
+| 5b | How much to trust the numbers | 95% CIs on every headline metric; paired bootstrap says the gain is not luck; the same model under random / session-grouped / temporal splits (quote the temporal one); data audit found no shortcut | REPORT §3.1–3.2, `shortcut_scan.png` |
+| 5c | New: a guarantee for every family | Mondrian conformal prediction: true family in the set for ≥ 90% of flows of *each* family; alerts show "possible families"; the price of guaranteeing recall for rare families, and why analyst labels lower it | `conformal_coverage.png` |
 | 6 | Attacks it has never seen | Leave-one-attack-out; LOF vs Isolation Forest vs autoencoder at the same 1% false-alarm budget | `novel_attack_detection.png` + detector table from METHODOLOGY §5 |
 | 7 | Attackers change tactics | Train on past / test on future: static vs retrained; label-free drift signals; why whole-traffic PSI misses it | `drift_psi.png`, `drift_recall.png` |
 | 8 | From prediction to action | Thousands of flow alerts → a much shorter list of incidents (REPORT §5); P1–P4, "why" explanations, playbooks; one analyst decision labels a whole incident | Console screenshot |
@@ -52,6 +60,12 @@ Record it with OBS or Xbox Game Bar (Win+Alt+R), 1080p, with voice-over.
 | What can't it detect? | Attacks that look statistically like benign sessions at flow level (e.g. web attacks inside normal HTTP traffic). That needs payload inspection; we report it instead of hiding it. |
 | How would this run in production? | `nids score` on flow logs (CICFlowMeter/Zeek) in batches or from a stream consumer; throughput is in the report. The drift monitor runs without labels; analyst decisions from the console are the labels for retraining. |
 | How do analyst decisions improve the model? | Each decision is stored with the flow's features, so it is a labelled example. `nids retrain` adds them to the training data, refits the classifier and novelty detector, and compares old vs. new on test flows nobody reviewed (reviewed flows are excluded, since they are training data now). REPORT §8 shows the effect of one simulated analyst-day. |
+| Macro-F1 0.973 on CIC-IDS2017, isn't that too good? | The random split is optimistic, and we measured by how much: session-grouped 0.888, temporal 0.180. The all-family jump from 0.766 is 9 flows of the two tiniest families; on measurable families the gain is +0.005. We report all of it. |
+| Why is the temporal score only 0.18? | Every CIC-IDS2017 attack happens on one day. Trained on Monday to Thursday morning, the classifier has never seen Friday's DDoS, PortScan or Botnet. That is the real limit of supervised IDS, and the reason for the novelty detector (DDoS 61% alerted before any label) and fast retraining (0.925 after 10% labels). |
+| Is the improvement statistically significant? | Yes: paired stratified bootstrap over 1,000 resamples, +0.055 macro-F1 [+0.032, +0.084], +0.125 rare-class F1 [+0.072, +0.188], better in 100% of resamples. The false-alarm cost is also significant and we report it. |
+| Random splits overestimate IDS results, don't they? | They can, which is why we measure it: a session-grouped split (no source-destination-hour session on both sides) and a temporal split. Here the session split shows no leakage; the temporal split (0.738) is the number we would quote for deployment. |
+| What is conformal prediction and why "Mondrian"? | It turns probabilities into a set of plausible families with a finite-sample coverage guarantee. Mondrian calibrates one threshold per family, so the guarantee holds for every family separately. A marginal guarantee would be carried by benign traffic and say nothing about a 0.2% family. |
+| WebAttack coverage is 87%, below 90%. Is the guarantee broken? | No. The guarantee is on average over calibration sets; with 69 calibration flows the realised coverage varies between 82% and 96% (Beta distribution), and 87% is inside that range. The report shows this range for every family. |
 | Isn't the IP address a useful feature? | It is a shortcut: it identifies the lab's attacker host, not attack behaviour, and does not transfer to a new network. IPs are kept only as context for analysts. |
 | Results on synthetic data? | Synthetic data was only used before the official release to build and test the pipeline; the submitted numbers are on the official data (the report states its source). |
 | Why random split if attacks are sessions? | Random stratified splits are standard but optimistic; the temporal experiment is the realistic estimate, and we show both. |

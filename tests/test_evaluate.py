@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from nids import BENIGN, UNKNOWN
-from nids.evaluate import binary_view, evaluate
+from nids.evaluate import binary_view, bootstrap_metrics, evaluate
 
 
 def test_binary_view_counts_any_alert_as_detection():
@@ -30,3 +30,14 @@ def test_perfect_predictions_and_rare_class_metrics():
     m = evaluate(y, y, proba, [BENIGN, "Bot", "DoS"])
     assert m["macro_f1"] == 1.0 and m["mcc"] == 1.0 and m["macro_pr_auc"] == 1.0
     assert sorted(m["rare_classes"]) == ["Bot", "DoS"] and m["rare_macro_f1"] == 1.0
+
+
+def test_tiny_families_are_counted_and_excluded_from_supported_macro_f1():
+    y = np.array([BENIGN] * 100 + ["DoS"] * 20 + ["Tiny"] * 2)
+    pred = y.copy()
+    pred[-2:] = BENIGN  # both Tiny flows missed
+    m = evaluate(y, pred)
+    assert m["tiny_classes"] == {"Tiny": {"support": 2, "found": 0}}
+    assert m["supported_classes"] == [BENIGN, "DoS"] and m["supported_macro_f1"] > 0.99 > m["macro_f1"]
+    boot = bootstrap_metrics(y, {"m": pred}, n_boot=50)["models"]["m"]
+    assert boot["supported_macro_f1"]["point"] == pytest.approx(m["supported_macro_f1"])

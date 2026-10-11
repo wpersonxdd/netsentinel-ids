@@ -1,0 +1,161 @@
+{
+  "generated_at": "2026-10-11T00:49:57+00:00",
+  "model": "ensemble",
+  "strategy": "smote",
+  "protocols": {
+    "random": {
+      "macro_f1": 0.9730535611378737,
+      "rare_macro_f1": 0.9532436284539468,
+      "macro_recall": 0.9649426411080877,
+      "mcc": 0.9963182117138343,
+      "macro_pr_auc": 0.9737559707214959,
+      "detection_rate": 0.9987416107382551,
+      "false_alarm_rate": 0.0010326849809504713,
+      "ci": {
+        "macro_f1": {
+          "point": 0.9730535611378736,
+          "low": 0.9460903425380948,
+          "high": 0.9920541893524921
+        },
+        "rare_macro_f1": {
+          "point": 0.9532436284539468,
+          "low": 0.9047551994914959,
+          "high": 0.9875138629164057
+        },
+        "macro_recall": {
+          "point": 0.9649426411080877,
+          "low": 0.932256186363079,
+          "high": 0.9973467332741333
+        },
+        "detection_rate": {
+          "point": 0.9987416107382551,
+          "low": 0.9983221476510067,
+          "high": 0.9991610738255033
+        },
+        "false_alarm_rate": {
+          "point": 0.0010326849809504713,
+          "low": 0.0008369260076198116,
+          "high": 0.0012231802686986165
+        }
+      },
+      "train_flows": 424186,
+      "test_flows": 121196,
+      "unseen_in_training": [],
+      "per_class_f1": {
+        "Benign": 0.9993480572104873,
+        "Botnet": 0.9427527405602923,
+        "BruteForce": 0.9994997498749375,
+        "DDoS": 0.9995071463775259,
+        "DoS": 0.9979399327767537,
+        "Exploit": 1.0,
+        "Infiltration": 0.8333333333333334,
+        "PortScan": 0.9944687716063609,
+        "WebAttack": 0.990632318501171
+      },
+      "note": "stratified random 70/10/20 split, as in the headline results"
+    },
+    "session": {
+      "macro_f1": 0.8878441390065459,
+      "rare_macro_f1": 0.8980926974809826,
+      "macro_recall": 0.8770676466957683,
+      "mcc": 0.8967331683610394,
+      "macro_pr_auc": 0.9495432463736277,
+      "detection_rate": 0.8399904138041221,
+      "false_alarm_rate": 0.0007546062422705263,
+      "ci": {
+        "macro_f1": {
+          "point": 0.8878441390065459,
+          "low": 0.8364074381831857,
+          "high": 0.9119316126979565
+        },
+        "rare_macro_f1": {
+          "point": 0.8980926974809826,
+          "low": 0.8050182594187602,
+          "high": 0.9408044783381297
+        },
+        "macro_recall": {
+          "point": 0.8770676466957683,
+          "low": 0.8305068665661723,
+          "high": 0.9101848694516051
+        },
+        "detection_rate": {
+          "point": 0.8399904138041221,
+          "low": 0.8367530755711775,
+          "high": 0.8430679821057677
+        },
+        "false_alarm_rate": {
+          "point": 0.0007546062422705263,
+          "low": 0.000576435323956652,
+          "high": 0.0009432578028381579
+        }
+      },
+      "train_flows": 485530,
+      "test_flows": 120450,
+      "unseen_in_training": [],
+      "per_class_f1": {
+        "Benign": 0.9790616239307462,
+        "Botnet": 0.9217809867629362,
+        "BruteForce": 0.9896398618648249,
+        "DDoS": 0.9958298582151793,
+        "DoS": 0.5300369168810829,
+        "Exploit": 1.0,
+        "Infiltration": 0.7272727272727273,
+        "PortScan": 0.9952053646269908,
+        "WebAttack": 0.8517699115044248
+      },
+      "note": "no session (source, destination, 5min window) spans train and test (0 shared)"
+    },
+    "temporal": {
+      "macro_f1": 0.17992165882875394,
+      "rare_macro_f1": 0.0,
+      "macro_recall": 0.1999443224741068,
+      "mcc": 0.2551445129679835,
+      "macro_pr_auc": 0.9490738401240484,
+      "detection_rate": 0.3482235381199112,
+      "false_alarm_rate": 0.00027838762946606516,
+      "ci": {
+        "macro_f1": {
+          "point": 0.17992165882875394,
+          "low": 0.17983596373961588,
+          "high": 0.1800124206777464
+        },
+        "rare_macro_f1": {
+          "point": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "macro_recall": {
+          "point": 0.1999443224741068,
+          "low": 0.1999266068976862,
+          "high": 0.19996203805052734
+        },
+        "detection_rate": {
+          "point": 0.3482235381199112,
+          "low": 0.3450952997779423,
+          "high": 0.35149009992598074
+        },
+        "false_alarm_rate": {
+          "point": 0.00027838762946606516,
+          "low": 0.00018980974736322625,
+          "high": 0.0003669655115689041
+        }
+      },
+      "train_flows": 393887,
+      "test_flows": 212093,
+      "unseen_in_training": [
+        "Botnet",
+        "DDoS",
+        "Infiltration",
+        "PortScan"
+      ],
+      "per_class_f1": {
+        "Benign": 0.8996082941437697,
+        "Botnet": 0.0,
+        "DDoS": 0.0,
+        "Infiltration": 0.0,
+        "PortScan": 0.0
+      },
+      "note": "oldest 65% of flows train, newest test"
+    }
+  }
+}

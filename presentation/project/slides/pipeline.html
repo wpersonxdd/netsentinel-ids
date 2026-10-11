@@ -1,0 +1,40 @@
+<section id="pipeline" data-transition="fade" style="background:#E9EDF2;color:#0E1A2B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:64px">
+<div style="display:flex;flex-direction:column;gap:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:2px;color:#2F7DE1">HOW IT WORKS</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#0E1A2B">From raw traffic to an analyst’s decision</h2>
+</div>
+<div style="display:flex;align-items:stretch;gap:16px">
+<div style="flex:1;background:#FCFCFA;border:1px solid #CDD5DF;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:10px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#2F7DE1">01</p>
+<p style="font-size:32px;font-weight:600;line-height:1.2;color:#0E1A2B">Flow records</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">One row per connection, any dataset format</p>
+</div>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;color:#2F7DE1;align-self:center">→</p>
+<div style="flex:1;background:#FCFCFA;border:1px solid #CDD5DF;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:10px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#2F7DE1">02</p>
+<p style="font-size:32px;font-weight:600;line-height:1.2;color:#0E1A2B">Clean and audit</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">Duplicates, broken rows and leaky columns removed</p>
+</div>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;color:#2F7DE1;align-self:center">→</p>
+<div style="flex:1;background:#FCFCFA;border:1px solid #CDD5DF;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:10px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#2F7DE1">03</p>
+<p style="font-size:32px;font-weight:600;line-height:1.2;color:#0E1A2B">Two detectors</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">Known attacks: rebalanced ensemble. New ones: novelty detector</p>
+</div>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;color:#2F7DE1;align-self:center">→</p>
+<div style="flex:1;background:#FCFCFA;border:1px solid #CDD5DF;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:10px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#2F7DE1">04</p>
+<p style="font-size:32px;font-weight:600;line-height:1.2;color:#0E1A2B">Triage</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">Incidents with priority, reason and first response</p>
+</div>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;color:#2F7DE1;align-self:center">→</p>
+<div style="flex:1;background:#0E1A2B;border:1px solid #0E1A2B;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:10px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#6FA8F0">05</p>
+<p style="font-size:32px;font-weight:600;line-height:1.2;color:#F5F6F3">Analyst</p>
+<p style="font-size:24px;line-height:1.4;color:#B9C7D8">Confirms or rejects; the model retrains on it</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#3D4757">One command runs the whole pipeline and writes a full evaluation report: <span style="color:#0E1A2B"><b>python -m nids all</b></span></p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7685">NetSentinel · DataNova 2026 · 4</p>
+<aside>Here is the pipeline. Network traffic arrives as flow records, one row per connection. They are cleaned and audited: duplicates, broken rows and columns that would leak the answer are removed. Then two detectors work side by side: a rebalanced ensemble for known attack types, and a novelty detector for unfamiliar ones. Their alerts are grouped into incidents with a priority, a reason and a first response. The analyst confirms or rejects each incident, and the model retrains on those decisions. One command runs everything and writes a full evaluation report.</aside>
+</section>

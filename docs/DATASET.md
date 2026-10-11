@@ -53,6 +53,40 @@ that the method works; they say nothing about real-world performance.**
 - [ ] Destination port is kept on purpose (it identifies the service under attack). If the capture used fixed lab
       ports so that the port alone gives away the attack, add it to `data.extra_drop_columns` and compare the two runs
 
+## CIC-IDS2017: the real-traffic run
+
+NetSentinel ships a ready config for CIC-IDS2017 (Canadian Institute for Cybersecurity, five days of labelled
+traffic, 3–7 July 2017):
+
+1. On https://www.unb.ca/cic/datasets/ids-2017.html download **`GeneratedLabelledFlows.zip`** (≈ 280 MB). Prefer it
+   over `MachineLearningCSV.zip`: it keeps source/destination IPs and timestamps, which the session-grouped and temporal
+   protocols, the drift experiment and incident grouping need. A download of a few hundred *bytes* is the server's
+   "504 Gateway Timeout" page; retry later.
+2. Extract the eight CSVs into `data/raw/cicids2017/`.
+3. Run everything (≈ 1–1.5 h on a laptop; results in `reports/cicids2017/`, model in `artifacts/cicids2017/`):
+   ```bash
+   python -m nids all --config configs/cicids2017.yaml
+   ```
+4. In the console, pick **CIC-IDS2017 (real traffic)** in the sidebar.
+
+Known dataset problems and how the pipeline deals with them:
+
+| Problem in CIC-IDS2017 | Handling |
+|---|---|
+| Afternoon timestamps written 1:00–5:00 **without PM** (12-hour clock), so afternoon flows sort before morning ones | `time_add_12h_before_hour: 8` (capture ran 08:00–18:00) |
+| Dates are day/month/year, and files mix `03/07/2017 08:55:58` with `7/7/2017 3:30` | `time_dayfirst: true` with explicit formats per file style |
+| 288,602 completely empty rows in the Thursday WebAttacks file | rows without a label are dropped |
+| Label text broken by encoding (`Web Attack � Brute Force`) | label normalisation maps it to `WebAttack` |
+| Duplicate column (`Fwd Header Length` twice) | de-duplicated names (`fwd_header_length_1`) |
+| `Infinity` / NaN in `Flow Bytes/s`, `Flow Packets/s` | → NaN → median imputation inside the pipeline |
+| 308,218 exact duplicate flows | removed before splitting |
+| 8 constant columns (bulk-rate features are always 0) | dropped |
+| 2.5 M flows after cleaning, 80% benign, 11 Heartbleed / 36 Infiltration flows | stratified 600k sample, families < 5,000 flows kept whole (`max_rows`, `min_per_class`); the report states the effect on precision |
+| Each attack type happens on one day only | the temporal protocol and the drift experiment therefore test *unseen* families, which is exactly what the novelty detector is for |
+
+The prepared 600k-flow dataset is cached in `data/processed/` (`data.cache: true`), so the seven steps parse the 1.2 GB
+of CSVs once.
+
 ## Public datasets to practise on
 
 | Dataset | Notes |

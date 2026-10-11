@@ -104,18 +104,33 @@ def load_feedback_examples(path: str | Path, numeric: list[str], categorical: li
     return X, y, fb, summary
 
 
+REVIEW_ORDERS = ("uncertainty", "review-first", "priority")
+
+
 def simulate_feedback(alerts: pd.DataFrame, budget: int = 100, order: str = "review-first") -> pd.DataFrame:
     """Play an analyst who works through ``budget`` incidents and labels every member flow correctly.
 
-    ``order="review-first"`` opens incidents flagged *needs review* first (low confidence / unknown family), then
-    by priority, which is how a team uses analyst time where the model is least sure. ``order="priority"`` simply
-    works the queue top-down. Needs a ``true_label`` column, i.e. alerts scored on labelled evaluation data.
+    * ``review-first`` (default): incidents flagged *needs review* first, then by priority, so analyst time goes
+      where the model is unsure *and* the stakes are high.
+    * ``uncertainty``: pure uncertainty sampling (flagged incidents, least confident first). On the synthetic data it
+      spends the budget on single-flow benign anomalies, which teaches the model little.
+    * ``priority``: work the queue top-down, as a SOC does without active learning.
+
+    Needs a ``true_label`` column, i.e. alerts scored on labelled evaluation data.
     """
+    if order not in REVIEW_ORDERS:
+        raise ValueError(f"order must be one of {REVIEW_ORDERS}")
     if "true_label" not in alerts.columns:
         raise ValueError("Simulated feedback needs ground truth: score labelled data (e.g. the test split).")
     incidents, alerts = group_incidents(alerts.drop(columns=["incident_id"], errors="ignore"))
-    keys = ["needs_review", "priority_score", "flows"] if order == "review-first" else ["priority_score", "flows"]
-    chosen = incidents.sort_values(keys, ascending=False, kind="stable").head(budget)["incident_id"]
+    if order == "uncertainty":
+        ranked = incidents.sort_values(["needs_review", "mean_confidence", "priority_score"],
+                                       ascending=[False, True, False], kind="stable")
+    elif order == "review-first":
+        ranked = incidents.sort_values(["needs_review", "priority_score", "flows"], ascending=False, kind="stable")
+    else:
+        ranked = incidents.sort_values(["priority_score", "flows"], ascending=False, kind="stable")
+    chosen = ranked.head(budget)["incident_id"]
     members = alerts[alerts["incident_id"].isin(set(chosen))]
     truth = members["true_label"].astype(str).to_numpy()
     decision = np.where(truth == BENIGN, "False positive", "Confirmed threat")

@@ -1,0 +1,26 @@
+<section id="yesterday" data-transition="fade" style="background:#0E1A2B;color:#F5F6F3;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:2px;color:#6FA8F0">THE HONEST NUMBER</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#F5F6F3">A supervised detector only knows yesterday’s attacks</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:center;gap:32px">
+<p style="width:420px;font-size:32px;color:#B9C7D8">Random split</p>
+<div style="width:1000px;height:44px;background:#2F7DE1;border-radius:8px"></div>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#F5F6F3">0.973</p>
+</div>
+<div style="display:flex;align-items:center;gap:32px">
+<p style="width:420px;font-size:32px;color:#B9C7D8">Session-grouped split</p>
+<div style="width:913px;height:44px;background:#5E9BE8;border-radius:8px"></div>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#F5F6F3">0.888</p>
+</div>
+<div style="display:flex;align-items:center;gap:32px">
+<p style="width:420px;font-size:32px;color:#B9C7D8">Train on the past, test on the future</p>
+<div style="width:185px;height:44px;background:#F08A3C;border-radius:8px"></div>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#F08A3C">0.180</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.45;color:#B9C7D8;width:1500px">Every attack in CIC-IDS2017 happens on a single day. Trained on Monday to Thursday morning, the model has never seen Friday’s DDoS, port scans or botnet. That is why NetSentinel adds a novelty detector and fast retraining.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#8EA3BC">NetSentinel · DataNova 2026 · 7 · macro-F1, same model, three ways to split the data</p>
+<aside>Now the most important slide. Most projects report a random train test split, and so did I: 0.973. When whole attack sessions are kept on one side, the score drops to 0.888, because the random split was leaking similar flows into training. And when I train on the past and test on the future, the score falls to 0.18. Every attack in this dataset happens on a single day, so a model trained on Monday to Thursday has never seen Friday's DDoS, port scans or botnet. A supervised detector only knows yesterday's attacks. That is exactly why NetSentinel adds a novelty detector and fast retraining.</aside>
+</section>

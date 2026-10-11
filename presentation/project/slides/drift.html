@@ -1,0 +1,25 @@
+<section id="drift" data-transition="fade" style="background:#E9EDF2;color:#0E1A2B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:2px;color:#2F7DE1">CHANGING TRAFFIC</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#0E1A2B">When traffic changes, it notices and recovers</h2>
+</div>
+<div style="display:flex;align-items:stretch;gap:20px">
+<div style="flex:1;background:#FCFCFA;border:1px solid #CDD5DF;border-radius:16px;padding:36px 40px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:96px;font-weight:700;line-height:1;color:#0E1A2B">0.998</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">on past traffic, Monday to Thursday morning</p>
+</div>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;color:#6B7685;align-self:center">→</p>
+<div style="flex:1;background:#FCFCFA;border:1px solid #CDD5DF;border-radius:16px;padding:36px 40px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:96px;font-weight:700;line-height:1;color:#C2591A">0.182</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">on the following days, model not updated</p>
+</div>
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;color:#6B7685;align-self:center">→</p>
+<div style="flex:1;background:#FCFCFA;border:1px solid #CDD5DF;border-radius:16px;padding:36px 40px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:96px;font-weight:700;line-height:1;color:#2F7DE1">0.925</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">after retraining on 10% labelled new flows</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.45;color:#3D4757">The drift monitor fired <b>without any labels</b>: the alerted traffic shifted, the mix of predictions shifted, and the share of “unknown” anomalies rose from 0.9% to 5.4%.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7685">NetSentinel · DataNova 2026 · 9 · macro-F1 on CIC-IDS2017, train on the past, test on the future</p>
+<aside>Attack patterns change, so NetSentinel watches for drift. Trained on Monday to Thursday morning, the model scores 0.998 on that period, but only 0.182 on the following days, when new attack types appear. The drift monitor noticed this without any labels: the alerted traffic shifted, the mix of predictions shifted, and unknown anomalies rose from 0.9 to 5.4 percent. After retraining on just ten percent of the new flows, labelled, the score recovers to 0.925.</aside>
+</section>

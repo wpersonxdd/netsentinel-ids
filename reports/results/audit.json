@@ -1,0 +1,246 @@
+{
+  "generated_at": "2026-10-10T18:22:03+00:00",
+  "rows": 100000,
+  "features": 28,
+  "dropped_duplicates": 500,
+  "dropped_rare_classes": {},
+  "missing_rates": {
+    "flow_bytes_s": 0.00123,
+    "flow_packets_s": 0.00086
+  },
+  "identifier_suspects": {},
+  "full_model_macro_f1": 0.834832106292987,
+  "shortcut_scan": [
+    {
+      "feature": "conn_count_same_dst_10s",
+      "single_feature_macro_f1": 0.3131,
+      "best_isolated_class": "DDoS",
+      "best_class_f1": 0.9803,
+      "share_of_full_model": 0.375,
+      "flag": "alone isolates a family (F1 >= 0.98)"
+    },
+    {
+      "feature": "fwd_packet_length_mean",
+      "single_feature_macro_f1": 0.2528,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.9895,
+      "share_of_full_model": 0.3029,
+      "flag": "alone isolates a family (F1 >= 0.98)"
+    },
+    {
+      "feature": "payload_entropy",
+      "single_feature_macro_f1": 0.2315,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.9738,
+      "share_of_full_model": 0.2773,
+      "flag": ""
+    },
+    {
+      "feature": "ack_flag_count",
+      "single_feature_macro_f1": 0.2251,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.8455,
+      "share_of_full_model": 0.2697,
+      "flag": ""
+    },
+    {
+      "feature": "flow_bytes_s",
+      "single_feature_macro_f1": 0.2234,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.9849,
+      "share_of_full_model": 0.2676,
+      "flag": "alone isolates a family (F1 >= 0.98)"
+    },
+    {
+      "feature": "bwd_packet_length_mean",
+      "single_feature_macro_f1": 0.2205,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.7738,
+      "share_of_full_model": 0.2641,
+      "flag": ""
+    },
+    {
+      "feature": "total_length_of_fwd_packets",
+      "single_feature_macro_f1": 0.2166,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.9895,
+      "share_of_full_model": 0.2595,
+      "flag": "alone isolates a family (F1 >= 0.98)"
+    },
+    {
+      "feature": "flow_duration",
+      "single_feature_macro_f1": 0.2115,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.834,
+      "share_of_full_model": 0.2534,
+      "flag": ""
+    },
+    {
+      "feature": "idle_mean",
+      "single_feature_macro_f1": 0.1942,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.8089,
+      "share_of_full_model": 0.2327,
+      "flag": ""
+    },
+    {
+      "feature": "flow_iat_std",
+      "single_feature_macro_f1": 0.1827,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.742,
+      "share_of_full_model": 0.2188,
+      "flag": ""
+    },
+    {
+      "feature": "flow_packets_s",
+      "single_feature_macro_f1": 0.1807,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.6974,
+      "share_of_full_model": 0.2164,
+      "flag": ""
+    },
+    {
+      "feature": "flow_iat_mean",
+      "single_feature_macro_f1": 0.1801,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.6543,
+      "share_of_full_model": 0.2158,
+      "flag": ""
+    },
+    {
+      "feature": "packet_length_std",
+      "single_feature_macro_f1": 0.1719,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.9891,
+      "share_of_full_model": 0.2059,
+      "flag": "alone isolates a family (F1 >= 0.98)"
+    },
+    {
+      "feature": "destination_port",
+      "single_feature_macro_f1": 0.1632,
+      "best_isolated_class": "BruteForce",
+      "best_class_f1": 0.496,
+      "share_of_full_model": 0.1954,
+      "flag": ""
+    },
+    {
+      "feature": "init_win_bytes_forward",
+      "single_feature_macro_f1": 0.1618,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.8577,
+      "share_of_full_model": 0.1939,
+      "flag": ""
+    },
+    {
+      "feature": "active_mean",
+      "single_feature_macro_f1": 0.1599,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.8033,
+      "share_of_full_model": 0.1915,
+      "flag": ""
+    },
+    {
+      "feature": "total_length_of_bwd_packets",
+      "single_feature_macro_f1": 0.146,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.7738,
+      "share_of_full_model": 0.1749,
+      "flag": ""
+    },
+    {
+      "feature": "unique_dst_ports_10s",
+      "single_feature_macro_f1": 0.1319,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.9792,
+      "share_of_full_model": 0.158,
+      "flag": ""
+    },
+    {
+      "feature": "total_fwd_packets",
+      "single_feature_macro_f1": 0.123,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.3553,
+      "share_of_full_model": 0.1473,
+      "flag": ""
+    },
+    {
+      "feature": "total_backward_packets",
+      "single_feature_macro_f1": 0.1078,
+      "best_isolated_class": "DDoS",
+      "best_class_f1": 0.3011,
+      "share_of_full_model": 0.1291,
+      "flag": ""
+    },
+    {
+      "feature": "psh_flag_count",
+      "single_feature_macro_f1": 0.0837,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.2615,
+      "share_of_full_model": 0.1003,
+      "flag": ""
+    },
+    {
+      "feature": "down_up_ratio",
+      "single_feature_macro_f1": 0.0514,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.1917,
+      "share_of_full_model": 0.0616,
+      "flag": ""
+    },
+    {
+      "feature": "rst_flag_count",
+      "single_feature_macro_f1": 0.0479,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.3997,
+      "share_of_full_model": 0.0574,
+      "flag": ""
+    },
+    {
+      "feature": "fin_flag_count",
+      "single_feature_macro_f1": 0.0249,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.1918,
+      "share_of_full_model": 0.0299,
+      "flag": ""
+    },
+    {
+      "feature": "urg_flag_count",
+      "single_feature_macro_f1": 0.023,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.1173,
+      "share_of_full_model": 0.0276,
+      "flag": ""
+    },
+    {
+      "feature": "syn_flag_count",
+      "single_feature_macro_f1": 0.0216,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.131,
+      "share_of_full_model": 0.0258,
+      "flag": ""
+    },
+    {
+      "feature": "protocol",
+      "single_feature_macro_f1": 0.0216,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.131,
+      "share_of_full_model": 0.0258,
+      "flag": ""
+    },
+    {
+      "feature": "init_win_bytes_backward",
+      "single_feature_macro_f1": 0.0165,
+      "best_isolated_class": "DDoS",
+      "best_class_f1": 0.0727,
+      "share_of_full_model": 0.0198,
+      "flag": ""
+    }
+  ],
+  "flagged": [
+    "conn_count_same_dst_10s",
+    "fwd_packet_length_mean",
+    "flow_bytes_s",
+    "total_length_of_fwd_packets",
+    "packet_length_std"
+  ]
+}

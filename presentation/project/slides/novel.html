@@ -1,0 +1,46 @@
+<section id="novel" data-transition="fade" style="background:#F5F6F3;color:#0E1A2B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:2px;color:#2F7DE1">UNSEEN ATTACKS</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#0E1A2B">Catching attacks it has never seen</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:24px">
+<p style="width:300px;font-size:24px;color:#6B7685">Hidden from training</p>
+<p style="width:220px;font-size:24px;color:#6B7685">Classifier alone</p>
+<p style="font-size:24px;color:#2F7DE1">With the novelty detector</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<p style="width:300px;font-size:32px;font-weight:600">Web attacks</p>
+<p style="width:220px;font-size:32px;color:#6B7685">3%</p>
+<div style="width:783px;height:32px;background:#2F7DE1;border-radius:6px"></div>
+<p style="font-size:32px;font-weight:700;color:#2F7DE1">87%</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<p style="width:300px;font-size:32px;font-weight:600">DoS</p>
+<p style="width:220px;font-size:32px;color:#6B7685">3%</p>
+<div style="width:639px;height:32px;background:#2F7DE1;border-radius:6px"></div>
+<p style="font-size:32px;font-weight:700;color:#2F7DE1">71%</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<p style="width:300px;font-size:32px;font-weight:600">DDoS</p>
+<p style="width:220px;font-size:32px;color:#6B7685">24%</p>
+<div style="width:360px;height:32px;background:#2F7DE1;border-radius:6px"></div>
+<p style="font-size:32px;font-weight:700;color:#2F7DE1">40%</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<p style="width:300px;font-size:32px;font-weight:600">Brute force</p>
+<p style="width:220px;font-size:32px;color:#6B7685">0%</p>
+<div style="width:27px;height:32px;background:#2F7DE1;border-radius:6px"></div>
+<p style="font-size:32px;font-weight:700;color:#C2591A">3%</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<p style="width:300px;font-size:32px;font-weight:600">Port scans, botnet</p>
+<p style="width:220px;font-size:32px;color:#6B7685">0%</p>
+<div style="width:6px;height:32px;background:#2F7DE1;border-radius:3px"></div>
+<p style="font-size:32px;font-weight:700;color:#C2591A">0%: look normal at flow level</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.45;color:#3D4757">Each family is hidden from training in turn. Average share of its flows that still raise an alert: <b>5% → 33%</b>, at about 1% extra false alarms.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7685">NetSentinel · DataNova 2026 · 8 · leave-one-attack-out test on CIC-IDS2017</p>
+<aside>How do we test attacks the model has never seen? Each attack family is hidden from training in turn, and we check how much of it still raises an alert. The classifier alone catches almost none of a hidden family. With the novelty detector, which only knows what normal traffic looks like, web attacks go from 3 to 87 percent and DoS from 3 to 71 percent. On average, 5 percent becomes 33 percent, for about one percent extra false alarms. Port scans, brute force and botnet traffic look normal at the flow level, so they stay hidden. That is a real limit, and I state it openly.</aside>
+</section>

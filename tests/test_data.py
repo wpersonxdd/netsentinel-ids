@@ -7,6 +7,7 @@ from nids.data import (
     load_dataset,
     normalize_columns,
     normalize_labels,
+    parse_time,
     split_indices,
     stratified_subsample,
     to_family,
@@ -115,6 +116,30 @@ def test_nslkdd_headerless(tmp_path):
     data = load_dataset({"path": str(path), "min_class_count": 5})
     assert data.y.value_counts().to_dict() == {BENIGN: 20, "DoS": 20}
     assert "difficulty" not in data.X.columns and "protocol_type" in data.categorical
+
+
+def test_cicids2017_time_quirks_are_repaired():
+    # day-first dates, two formats in one dataset, and afternoon hours written 1:00-5:00 without PM
+    raw = pd.Series(["03/07/2017 08:55:58", "7/7/2017 3:30", "7/7/2017 12:59", "7/7/2017 9:01"])
+    t = parse_time(raw, dayfirst=True, add_12h_before_hour=8)
+    assert list(t.dt.strftime("%Y-%m-%d %H:%M")) == ["2017-07-03 08:55", "2017-07-07 15:30", "2017-07-07 12:59",
+                                                      "2017-07-07 09:01"]
+    naive = parse_time(raw)  # without the options: mixed formats fail, or 3:30 PM sorts before 9:01 AM
+    assert naive is None or naive.iloc[1] < naive.iloc[3]
+    iso = parse_time(pd.Series(["2017-07-07 15:30:00", "2017-07-07 09:01:00"]), dayfirst=True, add_12h_before_hour=8)
+    assert list(iso.dt.hour) == [15, 9]  # already-correct ISO times are left alone
+
+
+def test_prepared_dataset_cache_is_reused_and_invalidated(tmp_path):
+    path = tmp_path / "flows.csv"
+    _flows().to_csv(path, index=False)
+    cfg = {"path": str(path), "min_class_count": 2, "cache": True, "cache_dir": str(tmp_path / "cache")}
+    first = load_dataset(cfg)
+    assert len(list((tmp_path / "cache").glob("*.joblib"))) == 1
+    assert load_dataset(cfg).X.equals(first.X)  # served from the cache
+    _flows(n_benign=70).to_csv(path, index=False)  # source changed -> new cache entry
+    assert len(load_dataset(cfg).y) != len(first.y)
+    assert len(list((tmp_path / "cache").glob("*.joblib"))) == 2
 
 
 def test_split_is_stratified_and_disjoint():

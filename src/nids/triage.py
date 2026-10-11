@@ -6,7 +6,8 @@ Every non-benign prediction becomes an alert with
 * explanation    - the features that deviate most from the benign baseline, in analyst language
                    ("conn_count_same_dst_10s=148, 49 IQR above the benign median of 3"),
 * playbook       - a recommended first response for that family,
-* needs_review   - low-confidence or unknown-family alerts that should get human eyes first,
+* possible_families - the conformal prediction set: every family plausible at the guaranteed coverage level,
+* needs_review   - low confidence, a conformal set with several families, or an unknown family: human eyes first,
 * feat_*         - the flow's feature values, so an analyst decision doubles as a training example.
 
 Alerts are then grouped into incidents (``group_incidents``), the unit an analyst actually works on.
@@ -141,6 +142,13 @@ def build_alerts(prediction: dict, X: pd.DataFrame, context: pd.DataFrame, basel
     weight = np.array([SEVERITY_WEIGHT.get(s, 0.5) for s in severity])
     pscore = np.clip(weight * (0.5 + 0.5 * conf) + 0.1 * novel, 0, 1)
 
+    # Needs review: low confidence, OR (with conformal sets) more than one family plausible at the guaranteed
+    # coverage, OR an unknown family. The two uncertainty signals are complementary: per-family conformal thresholds
+    # differ widely, so a 50/50 flow can still get a one-family set; a confident flow can still be ambiguous between
+    # two families whose thresholds are loose.
+    uncertain = conf < conf_threshold
+    if "set_size" in prediction:
+        uncertain = uncertain | (prediction["set_size"][mask] != 1)
     ctx = context.iloc[np.flatnonzero(mask)].reset_index(drop=True)
     alerts = pd.DataFrame({
         "priority": priority_label(pscore),
@@ -150,8 +158,10 @@ def build_alerts(prediction: dict, X: pd.DataFrame, context: pd.DataFrame, basel
         "confidence": conf.round(3),
         "anomaly_score": score.round(3),
         "novel": novel,
-        "needs_review": (conf < conf_threshold) | unknown,
+        "needs_review": uncertain | unknown,
     })
+    if "possible_families" in prediction:
+        alerts["possible_families"] = np.asarray(prediction["possible_families"])[mask]
     for col in ("timestamp", "src_ip", "dst_ip", "dst_port"):
         if col in ctx.columns:
             alerts[col] = ctx[col].values
@@ -222,6 +232,8 @@ def group_incidents(alerts: pd.DataFrame, gap: str = "1h") -> tuple[pd.DataFrame
         "explanation": top["explanation"],
         "recommended_action": top["recommended_action"],
     })
+    if "possible_families" in top.columns:
+        incidents["possible_families"] = top["possible_families"]
     # Sustained activity escalates: an incident with many flows outranks a single flow of the same family.
     min_flows, boost = VOLUME_ESCALATION
     incidents["priority_score"] = np.clip(incidents["priority_score"] + boost * (incidents["flows"] >= min_flows),

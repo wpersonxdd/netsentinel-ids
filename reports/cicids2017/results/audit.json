@@ -1,0 +1,586 @@
+{
+  "generated_at": "2026-10-11T00:34:03+00:00",
+  "rows": 605980,
+  "features": 71,
+  "dropped_duplicates": 308218,
+  "dropped_rare_classes": {},
+  "missing_rates": {
+    "flow_bytes_s": 0.00062,
+    "flow_packets_s": 0.00062
+  },
+  "identifier_suspects": {},
+  "full_model_macro_f1": 0.9730535611378737,
+  "shortcut_scan": [
+    {
+      "feature": "total_length_of_bwd_packets",
+      "single_feature_macro_f1": 0.3562,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.9091,
+      "share_of_full_model": 0.3661,
+      "flag": ""
+    },
+    {
+      "feature": "subflow_bwd_bytes",
+      "single_feature_macro_f1": 0.3562,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.9091,
+      "share_of_full_model": 0.3661,
+      "flag": ""
+    },
+    {
+      "feature": "destination_port",
+      "single_feature_macro_f1": 0.3409,
+      "best_isolated_class": "BruteForce",
+      "best_class_f1": 0.8186,
+      "share_of_full_model": 0.3503,
+      "flag": ""
+    },
+    {
+      "feature": "packet_length_std",
+      "single_feature_macro_f1": 0.3149,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7096,
+      "share_of_full_model": 0.3236,
+      "flag": ""
+    },
+    {
+      "feature": "packet_length_variance",
+      "single_feature_macro_f1": 0.3149,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7096,
+      "share_of_full_model": 0.3236,
+      "flag": ""
+    },
+    {
+      "feature": "init_win_bytes_backward",
+      "single_feature_macro_f1": 0.3122,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.9326,
+      "share_of_full_model": 0.3209,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_packet_length_mean",
+      "single_feature_macro_f1": 0.3115,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.8571,
+      "share_of_full_model": 0.3201,
+      "flag": ""
+    },
+    {
+      "feature": "avg_bwd_segment_size",
+      "single_feature_macro_f1": 0.3115,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.8571,
+      "share_of_full_model": 0.3201,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_packet_length_max",
+      "single_feature_macro_f1": 0.3053,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 1.0,
+      "share_of_full_model": 0.3138,
+      "flag": "alone isolates a family (F1 >= 0.98)"
+    },
+    {
+      "feature": "max_packet_length",
+      "single_feature_macro_f1": 0.2861,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.9167,
+      "share_of_full_model": 0.2941,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_iat_max",
+      "single_feature_macro_f1": 0.2729,
+      "best_isolated_class": "BruteForce",
+      "best_class_f1": 0.6145,
+      "share_of_full_model": 0.2804,
+      "flag": ""
+    },
+    {
+      "feature": "packet_length_mean",
+      "single_feature_macro_f1": 0.2723,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.8571,
+      "share_of_full_model": 0.2799,
+      "flag": ""
+    },
+    {
+      "feature": "average_packet_size",
+      "single_feature_macro_f1": 0.2646,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.6698,
+      "share_of_full_model": 0.272,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_header_length",
+      "single_feature_macro_f1": 0.2644,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.5806,
+      "share_of_full_model": 0.2717,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_header_length_1",
+      "single_feature_macro_f1": 0.2644,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.5806,
+      "share_of_full_model": 0.2717,
+      "flag": ""
+    },
+    {
+      "feature": "flow_iat_max",
+      "single_feature_macro_f1": 0.2626,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7779,
+      "share_of_full_model": 0.2699,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_iat_std",
+      "single_feature_macro_f1": 0.2504,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7713,
+      "share_of_full_model": 0.2573,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_packet_length_max",
+      "single_feature_macro_f1": 0.2464,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.5607,
+      "share_of_full_model": 0.2532,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_header_length",
+      "single_feature_macro_f1": 0.2443,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.6667,
+      "share_of_full_model": 0.251,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_packets_s",
+      "single_feature_macro_f1": 0.2374,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.6632,
+      "share_of_full_model": 0.244,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_iat_max",
+      "single_feature_macro_f1": 0.2355,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.771,
+      "share_of_full_model": 0.242,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_iat_mean",
+      "single_feature_macro_f1": 0.2242,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.4656,
+      "share_of_full_model": 0.2305,
+      "flag": ""
+    },
+    {
+      "feature": "total_backward_packets",
+      "single_feature_macro_f1": 0.2233,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.4509,
+      "share_of_full_model": 0.2295,
+      "flag": ""
+    },
+    {
+      "feature": "subflow_bwd_packets",
+      "single_feature_macro_f1": 0.2233,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.4509,
+      "share_of_full_model": 0.2295,
+      "flag": ""
+    },
+    {
+      "feature": "flow_duration",
+      "single_feature_macro_f1": 0.2197,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.5803,
+      "share_of_full_model": 0.2258,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_iat_total",
+      "single_feature_macro_f1": 0.2172,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.4707,
+      "share_of_full_model": 0.2232,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_packet_length_std",
+      "single_feature_macro_f1": 0.2122,
+      "best_isolated_class": "DDoS",
+      "best_class_f1": 0.5992,
+      "share_of_full_model": 0.2181,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_iat_mean",
+      "single_feature_macro_f1": 0.2083,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7098,
+      "share_of_full_model": 0.214,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_packets_s",
+      "single_feature_macro_f1": 0.2058,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7022,
+      "share_of_full_model": 0.2114,
+      "flag": ""
+    },
+    {
+      "feature": "total_length_of_fwd_packets",
+      "single_feature_macro_f1": 0.2057,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.6487,
+      "share_of_full_model": 0.2113,
+      "flag": ""
+    },
+    {
+      "feature": "subflow_fwd_bytes",
+      "single_feature_macro_f1": 0.2057,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.6487,
+      "share_of_full_model": 0.2113,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_iat_std",
+      "single_feature_macro_f1": 0.1982,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.575,
+      "share_of_full_model": 0.2037,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_packet_length_mean",
+      "single_feature_macro_f1": 0.1974,
+      "best_isolated_class": "DDoS",
+      "best_class_f1": 0.5539,
+      "share_of_full_model": 0.2029,
+      "flag": ""
+    },
+    {
+      "feature": "avg_fwd_segment_size",
+      "single_feature_macro_f1": 0.1974,
+      "best_isolated_class": "DDoS",
+      "best_class_f1": 0.5539,
+      "share_of_full_model": 0.2029,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_iat_total",
+      "single_feature_macro_f1": 0.194,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.6032,
+      "share_of_full_model": 0.1993,
+      "flag": ""
+    },
+    {
+      "feature": "flow_iat_std",
+      "single_feature_macro_f1": 0.1936,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7433,
+      "share_of_full_model": 0.199,
+      "flag": ""
+    },
+    {
+      "feature": "total_fwd_packets",
+      "single_feature_macro_f1": 0.1901,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.7826,
+      "share_of_full_model": 0.1954,
+      "flag": ""
+    },
+    {
+      "feature": "subflow_fwd_packets",
+      "single_feature_macro_f1": 0.1901,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.7826,
+      "share_of_full_model": 0.1954,
+      "flag": ""
+    },
+    {
+      "feature": "flow_bytes_s",
+      "single_feature_macro_f1": 0.1901,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.4784,
+      "share_of_full_model": 0.1953,
+      "flag": ""
+    },
+    {
+      "feature": "act_data_pkt_fwd",
+      "single_feature_macro_f1": 0.1858,
+      "best_isolated_class": "Exploit",
+      "best_class_f1": 0.7273,
+      "share_of_full_model": 0.191,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_packet_length_std",
+      "single_feature_macro_f1": 0.1855,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7117,
+      "share_of_full_model": 0.1907,
+      "flag": ""
+    },
+    {
+      "feature": "flow_packets_s",
+      "single_feature_macro_f1": 0.1788,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.6824,
+      "share_of_full_model": 0.1837,
+      "flag": ""
+    },
+    {
+      "feature": "flow_iat_mean",
+      "single_feature_macro_f1": 0.1698,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7098,
+      "share_of_full_model": 0.1745,
+      "flag": ""
+    },
+    {
+      "feature": "init_win_bytes_forward",
+      "single_feature_macro_f1": 0.1653,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.6584,
+      "share_of_full_model": 0.1699,
+      "flag": ""
+    },
+    {
+      "feature": "idle_max",
+      "single_feature_macro_f1": 0.1482,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7797,
+      "share_of_full_model": 0.1523,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_iat_min",
+      "single_feature_macro_f1": 0.142,
+      "best_isolated_class": "WebAttack",
+      "best_class_f1": 0.6878,
+      "share_of_full_model": 0.1459,
+      "flag": ""
+    },
+    {
+      "feature": "min_seg_size_forward",
+      "single_feature_macro_f1": 0.1374,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.6656,
+      "share_of_full_model": 0.1412,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_packet_length_min",
+      "single_feature_macro_f1": 0.133,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.6122,
+      "share_of_full_model": 0.1367,
+      "flag": ""
+    },
+    {
+      "feature": "active_min",
+      "single_feature_macro_f1": 0.1324,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7038,
+      "share_of_full_model": 0.136,
+      "flag": ""
+    },
+    {
+      "feature": "min_packet_length",
+      "single_feature_macro_f1": 0.1309,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.6091,
+      "share_of_full_model": 0.1345,
+      "flag": ""
+    },
+    {
+      "feature": "idle_mean",
+      "single_feature_macro_f1": 0.13,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7264,
+      "share_of_full_model": 0.1336,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_packet_length_min",
+      "single_feature_macro_f1": 0.1251,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.6283,
+      "share_of_full_model": 0.1286,
+      "flag": ""
+    },
+    {
+      "feature": "active_mean",
+      "single_feature_macro_f1": 0.1229,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7256,
+      "share_of_full_model": 0.1263,
+      "flag": ""
+    },
+    {
+      "feature": "active_max",
+      "single_feature_macro_f1": 0.1217,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.728,
+      "share_of_full_model": 0.1251,
+      "flag": ""
+    },
+    {
+      "feature": "flow_iat_min",
+      "single_feature_macro_f1": 0.1145,
+      "best_isolated_class": "WebAttack",
+      "best_class_f1": 0.3315,
+      "share_of_full_model": 0.1177,
+      "flag": ""
+    },
+    {
+      "feature": "idle_min",
+      "single_feature_macro_f1": 0.1119,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.7775,
+      "share_of_full_model": 0.115,
+      "flag": ""
+    },
+    {
+      "feature": "bwd_iat_min",
+      "single_feature_macro_f1": 0.1072,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.3747,
+      "share_of_full_model": 0.1102,
+      "flag": ""
+    },
+    {
+      "feature": "cwe_flag_count",
+      "single_feature_macro_f1": 0.0883,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.7312,
+      "share_of_full_model": 0.0907,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_urg_flags",
+      "single_feature_macro_f1": 0.0883,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.7312,
+      "share_of_full_model": 0.0907,
+      "flag": ""
+    },
+    {
+      "feature": "protocol",
+      "single_feature_macro_f1": 0.079,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.6081,
+      "share_of_full_model": 0.0812,
+      "flag": ""
+    },
+    {
+      "feature": "idle_std",
+      "single_feature_macro_f1": 0.0601,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.1673,
+      "share_of_full_model": 0.0618,
+      "flag": ""
+    },
+    {
+      "feature": "fin_flag_count",
+      "single_feature_macro_f1": 0.0563,
+      "best_isolated_class": "DoS",
+      "best_class_f1": 0.4365,
+      "share_of_full_model": 0.0578,
+      "flag": ""
+    },
+    {
+      "feature": "down_up_ratio",
+      "single_feature_macro_f1": 0.0407,
+      "best_isolated_class": "DDoS",
+      "best_class_f1": 0.2341,
+      "share_of_full_model": 0.0418,
+      "flag": ""
+    },
+    {
+      "feature": "psh_flag_count",
+      "single_feature_macro_f1": 0.0228,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.2044,
+      "share_of_full_model": 0.0234,
+      "flag": ""
+    },
+    {
+      "feature": "active_std",
+      "single_feature_macro_f1": 0.0203,
+      "best_isolated_class": "Benign",
+      "best_class_f1": 0.0781,
+      "share_of_full_model": 0.0209,
+      "flag": ""
+    },
+    {
+      "feature": "urg_flag_count",
+      "single_feature_macro_f1": 0.0156,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.0752,
+      "share_of_full_model": 0.016,
+      "flag": ""
+    },
+    {
+      "feature": "ack_flag_count",
+      "single_feature_macro_f1": 0.011,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.0967,
+      "share_of_full_model": 0.0113,
+      "flag": ""
+    },
+    {
+      "feature": "fwd_psh_flags",
+      "single_feature_macro_f1": 0.0109,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.071,
+      "share_of_full_model": 0.0112,
+      "flag": ""
+    },
+    {
+      "feature": "syn_flag_count",
+      "single_feature_macro_f1": 0.0109,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.071,
+      "share_of_full_model": 0.0112,
+      "flag": ""
+    },
+    {
+      "feature": "ece_flag_count",
+      "single_feature_macro_f1": 0.0076,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.0678,
+      "share_of_full_model": 0.0078,
+      "flag": ""
+    },
+    {
+      "feature": "rst_flag_count",
+      "single_feature_macro_f1": 0.0076,
+      "best_isolated_class": "PortScan",
+      "best_class_f1": 0.0678,
+      "share_of_full_model": 0.0078,
+      "flag": ""
+    }
+  ],
+  "flagged": [
+    "bwd_packet_length_max"
+  ]
+}

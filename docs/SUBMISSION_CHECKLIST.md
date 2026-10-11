@@ -9,7 +9,7 @@ that handles highly imbalanced threat data and adapts to evolving attack pattern
 |---|---|---|
 | **Code** | `src/nids/` (pipeline), `app/` (console), `scripts/`, `tests/` | ✅ |
 | **Documentation** | `README.md`, `docs/METHODOLOGY.md`, `docs/DATASET.md` | ✅ |
-| **Evaluation** | `reports/REPORT.md` + `reports/figures/` + `reports/results/*.json` (regenerate on the official data) | ⏳ re-run on official data |
+| **Evaluation** | Real traffic: `reports/cicids2017/REPORT.md` (CIC-IDS2017); synthetic stress test: `reports/REPORT.md`; regenerate on the official data | ✅ CIC-IDS2017 · ⏳ official data |
 | **Presentation** | Outline and demo script in `docs/PRESENTATION.md`; build the slides from it | ⏳ build slides |
 
 ## Expected outcome (from the problem statement)
@@ -27,9 +27,9 @@ that handles highly imbalanced threat data and adapts to evolving attack pattern
 | Criterion | Strongest evidence |
 |---|---|
 | Problem understanding | Four sub-problems framed in METHODOLOGY intro (imbalance, open world, drift, humans in the loop); why accuracy is misleading |
-| Innovation & originality | Hybrid supervised + novelty decision; label-free drift signals on *alerted* traffic; analyst feedback → retraining loop |
+| Innovation & originality | **Per-family conformal guarantees** (Mondrian conformal prediction) for rare attack families, with the "price of a guarantee" made explicit; hybrid supervised + novelty decision; label-free drift signals on *alerted* traffic; analyst feedback → retraining loop |
 | Technical depth | Leakage guards, imblearn pipelines, focal loss, LOF vs Isolation Forest vs autoencoder comparison, PSI monitoring |
-| Data usage & methodology | Validation-only model selection, single test-set evaluation, LOAO and temporal protocols |
+| Data usage & methodology | **Real public dataset (CIC-IDS2017) with its known quirks repaired**; support-aware model selection; macro-F1 on measurable families + counts for tiny ones; data audit with shortcut scan; validation-only model selection; single test-set evaluation with 95% bootstrap CIs and paired significance tests; random vs. session-grouped vs. temporal protocols; LOAO; reviewed flows excluded from feedback evaluation |
 | AI/ML approach | 20-configuration benchmark, ensemble, deep model, novelty detection |
 | Solution quality | Tests (unit + end-to-end), one config, reproducible results JSON, CI workflow |
 | Feasibility & scalability | Throughput figure in REPORT §3; `nids score` CLI for batch scoring; Dockerfile; Parquet + directory input |
@@ -41,12 +41,12 @@ that handles highly imbalanced threat data and adapts to evolving attack pattern
 - [ ] Official data in `data/raw/official/`, `python -m nids all --data data/raw/official` run, REPORT regenerated
 - [ ] Synthetic-data note removed from REPORT automatically (it only appears when the source path contains "synthetic")
 - [ ] `triage.severity` extended for any new attack families in the official data
-- [ ] `pytest -q` green
+- [x] `pytest -q` green (81 tests)
 - [x] Author name in `LICENSE` and the README author line
-- [ ] Screenshot of the console (Incidents view with an incident open) saved as `docs/img/console.png` and added to
-      the README under "Results"
+- [x] Console screenshots in `docs/media/screens/`, the incident queue shown in the README
 - [x] Repository pushed to GitHub (https://github.com/wpersonxdd/netsentinel-ids)
 - [ ] CI enabled: move `.github/ci.yml` to `.github/workflows/ci.yml` on github.com (see README.ru.md), badge green
 - [ ] Repository made public (or judges invited) at submission time
-- [ ] Demo video (3 min, see `docs/PRESENTATION.md`) recorded and linked in README
-- [ ] Slides exported to PDF, linked in README and in the registration form ("Project presentation link")
+- [x] Demo video (`docs/media/NetSentinel_demo.mp4`, 5.4 min, narrated, English captions) linked in README
+- [x] Slides exported to PDF (`docs/NetSentinel_slides.pdf`) and linked in README
+- [ ] Presentation and video links added to the registration form ("Project presentation link")

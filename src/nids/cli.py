@@ -79,6 +79,22 @@ def cmd_drift(args) -> None:
     run_drift(cfg)
 
 
+def cmd_audit(args) -> None:
+    from nids.experiments import run_audit
+
+    cfg = _cfg(args)
+    _ensure_data(cfg)
+    run_audit(cfg)
+
+
+def cmd_protocols(args) -> None:
+    from nids.experiments import run_protocols
+
+    cfg = _cfg(args)
+    _ensure_data(cfg)
+    run_protocols(cfg)
+
+
 def cmd_report(args) -> None:
     from nids.report import write_report
 
@@ -144,7 +160,7 @@ def _feedback_demo(cfg: dict) -> None:
 
 
 def cmd_all(args) -> None:
-    from nids.experiments import run_benchmark, run_drift, run_novelty, run_train
+    from nids.experiments import run_audit, run_benchmark, run_drift, run_novelty, run_protocols, run_train
     from nids.report import write_report
     from nids.synthetic import generate_flows
 
@@ -156,6 +172,8 @@ def cmd_all(args) -> None:
     else:
         run_benchmark(cfg)
     run_train(cfg)
+    run_audit(cfg)
+    run_protocols(cfg)
     run_novelty(cfg)
     run_drift(cfg)
     _feedback_demo(cfg)
@@ -191,6 +209,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--model", help="override final_model.model")
     p.add_argument("--strategy", help="override final_model.strategy")
     p.set_defaults(func=cmd_train)
+    with_config(sub.add_parser("audit", help="data quality, identifier columns and single-feature shortcut scan")
+                ).set_defaults(func=cmd_audit)
+    with_config(sub.add_parser("protocols", help="same model under random, session-grouped and temporal splits")
+                ).set_defaults(func=cmd_protocols)
     with_config(sub.add_parser("novelty", help="leave-one-attack-out novel-attack experiment")).set_defaults(
         func=cmd_novelty)
     with_config(sub.add_parser("drift", help="temporal drift + retraining experiment")).set_defaults(func=cmd_drift)
@@ -208,7 +230,8 @@ def build_parser() -> argparse.ArgumentParser:
                                    help="play an analyst who labels the top incidents of a labelled alert queue"))
     p.add_argument("--alerts", help="alert CSV with a true_label column (default: artifacts/alerts_test.csv)")
     p.add_argument("--budget", type=int, help="incidents to review (default: feedback.simulated_incidents)")
-    p.add_argument("--order", choices=["review-first", "priority"], help="which incidents the analyst opens first")
+    p.add_argument("--order", choices=["uncertainty", "review-first", "priority"],
+                   help="which incidents the analyst opens first")
     p.add_argument("--out", default="artifacts/simulated_feedback.csv")
     p.set_defaults(func=cmd_simulate_feedback)
 
@@ -218,7 +241,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--out", help="where to save; default replaces the model and archives the old one")
     p.set_defaults(func=cmd_retrain)
 
-    p = with_config(sub.add_parser("all", help="benchmark -> train -> novelty -> drift -> feedback loop -> report"))
+    p = with_config(sub.add_parser("all", help="benchmark -> train -> audit -> protocols -> novelty -> drift -> "
+                                               "feedback loop -> report"))
     p.add_argument("--skip-benchmark", action="store_true")
     p.set_defaults(func=cmd_all)
     return parser

@@ -23,4 +23,5 @@ def small_cfg(tmp_path, synthetic_csv) -> dict:
         "benchmark": {"models": ["hist_gb"], "strategies": ["none", "smote"]},
         "explain": {"permutation_rows": 400, "permutation_repeats": 1},
         "novelty": {"min_family_test_count": 5},
+        "evaluation": {"bootstrap": 100},
     })

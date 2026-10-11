@@ -1,0 +1,71 @@
+{
+  "generated_at": "2026-10-11T00:56:04+00:00",
+  "model": "hist_gb",
+  "strategy": "smote",
+  "benign_fpr_budget": 0.01,
+  "anomaly_detector_false_alarm_rate": 0.010767996791658312,
+  "mean_classifier_detection": 0.05198461882539748,
+  "mean_hybrid_detection": 0.3339612221811186,
+  "rows": [
+    {
+      "held_out_family": "Botnet",
+      "test_flows": 391,
+      "classifier_detection": 0.0,
+      "hybrid_detection": 0.0,
+      "caught_only_by_anomaly_detector": 0.0,
+      "most_common_label_given": "Benign",
+      "classifier_false_alarm_rate": 0.0006216162021255264,
+      "hybrid_false_alarm_rate": 0.011349508722678965
+    },
+    {
+      "held_out_family": "BruteForce",
+      "test_flows": 1000,
+      "classifier_detection": 0.003,
+      "hybrid_detection": 0.028,
+      "caught_only_by_anomaly_detector": 0.025,
+      "most_common_label_given": "PortScan",
+      "classifier_false_alarm_rate": 0.0010928413876077803,
+      "hybrid_false_alarm_rate": 0.011810707840385001
+    },
+    {
+      "held_out_family": "DDoS",
+      "test_flows": 6090,
+      "classifier_detection": 0.23793103448275862,
+      "hybrid_detection": 0.3993431855500821,
+      "caught_only_by_anomaly_detector": 0.16141215106732348,
+      "most_common_label_given": "DoS",
+      "classifier_false_alarm_rate": 0.0009925807098455986,
+      "hybrid_false_alarm_rate": 0.011710447162622819
+    },
+    {
+      "held_out_family": "DoS",
+      "test_flows": 9217,
+      "classifier_detection": 0.034175979168926986,
+      "hybrid_detection": 0.7048931322556147,
+      "caught_only_by_anomaly_detector": 0.6707171530866877,
+      "most_common_label_given": "PortScan",
+      "classifier_false_alarm_rate": 0.0009324243031882895,
+      "hybrid_false_alarm_rate": 0.011680368959294165
+    },
+    {
+      "held_out_family": "PortScan",
+      "test_flows": 4320,
+      "classifier_detection": 0.004166666666666667,
+      "hybrid_detection": 0.004398148148148148,
+      "caught_only_by_anomaly_detector": 0.0002314814814814815,
+      "most_common_label_given": "DoS",
+      "classifier_false_alarm_rate": 0.0006115901343493082,
+      "hybrid_false_alarm_rate": 0.01132945658712653
+    },
+    {
+      "held_out_family": "WebAttack",
+      "test_flows": 429,
+      "classifier_detection": 0.03263403263403263,
+      "hybrid_detection": 0.8671328671328671,
+      "caught_only_by_anomaly_detector": 0.8344988344988346,
+      "most_common_label_given": "DoS",
+      "classifier_false_alarm_rate": 0.0010928413876077803,
+      "hybrid_false_alarm_rate": 0.011830759975937436
+    }
+  ]
+}

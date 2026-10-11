@@ -22,6 +22,9 @@ DEFAULTS: dict[str, Any] = {
         "label_mode": "family",
         "extra_drop_columns": [],
         "max_rows": None,
+        "min_per_class": 1000,
+        "time_dayfirst": False,
+        "time_add_12h_before_hour": None,
         "min_class_count": 10,
         "test_size": 0.2,
         "val_size": 0.1,
@@ -45,6 +48,7 @@ DEFAULTS: dict[str, Any] = {
         "models": ["logreg", "random_forest", "hist_gb", "deep_mlp", "ensemble"],
         "strategies": ["none", "class_weight", "smote", "hybrid"],
         "selection_metric": "macro_f1",
+        "min_val_support": 10,
         "max_train_rows": None,
     },
     "final_model": {"model": "auto", "strategy": "auto"},
@@ -63,6 +67,9 @@ DEFAULTS: dict[str, Any] = {
               "unknown_rate_ratio_alert": 2.0},
     "triage": {"confidence_threshold": 0.6, "severity": dict(DEFAULT_SEVERITY)},
     "feedback": {"simulated_incidents": 100, "review_order": "review-first", "weight": 1},
+    "conformal": {"alpha": 0.1},
+    "evaluation": {"bootstrap": 1000},
+    "protocols": {"session_window": "1h"},
 }
 
 

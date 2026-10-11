@@ -1,0 +1,25 @@
+<section id="results" data-transition="fade" style="background:#F5F6F3;color:#0E1A2B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:2px;color:#2F7DE1">RESULTS · 121,196 TEST FLOWS</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;color:#0E1A2B">Known attack types: almost all caught</h2>
+</div>
+<div style="display:flex;gap:24px">
+<div style="flex:1;background:#FCFCFA;border:1px solid #DCE1E7;border-radius:16px;padding:36px 40px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:96px;font-weight:700;line-height:1;color:#2F7DE1">99.9%</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">of attack flows raise an alert</p>
+</div>
+<div style="flex:1;background:#FCFCFA;border:1px solid #DCE1E7;border-radius:16px;padding:36px 40px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:96px;font-weight:700;line-height:1;color:#0E1A2B">0.10%</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">of normal flows raise a false alarm</p>
+</div>
+<div style="flex:1;background:#FCFCFA;border:1px solid #DCE1E7;border-radius:16px;padding:36px 40px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Space Grotesk', Arial, sans-serif;font-size:96px;font-weight:700;line-height:1;color:#0E1A2B">0.973</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">macro-F1, every family weighted equally (0.766 without rebalancing)</p>
+</div>
+</div>
+<div style="background:#FBF1E8;border-left:8px solid #F08A3C;border-radius:12px;padding:28px 36px">
+<p style="font-size:28px;line-height:1.45;color:#3D2A1C"><b>Honest reading:</b> most of the jump from 0.766 comes from 9 test flows of the two rarest families (Heartbleed 2 of 2 found, Infiltration 5 of 7, versus none). On families with at least 10 test flows, rebalancing adds +0.005: small, but statistically significant.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7685">NetSentinel · DataNova 2026 · 6 · 95% bootstrap intervals in reports/cicids2017/REPORT.md</p>
+<aside>On 121 thousand test flows, 99.9 percent of attack flows raise an alert, and only 0.1 percent of normal flows raise a false alarm. Macro F1, which weights every attack family equally, rises from 0.766 without rebalancing to 0.973. But here is the honest reading: most of that jump comes from nine test flows of the two rarest families, Heartbleed and Infiltration, which the unbalanced model missed completely. On the families with enough test data, rebalancing adds a small but statistically significant gain.</aside>
+</section>

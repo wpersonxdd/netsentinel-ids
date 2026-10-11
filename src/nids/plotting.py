@@ -200,6 +200,36 @@ def importance(imp: pd.DataFrame, path: Path, top: int = 15) -> Path:
     return _save(fig, path)
 
 
+def ranked_bars(values: pd.Series, path: Path, title: str, xlabel: str, reference: float | None = None,
+                reference_label: str = "", highlight: set | None = None, value_labels: list[str] | None = None,
+                top: int | None = None, sort: bool = True, xlim: tuple | None = None) -> Path:
+    """One horizontal bar per item, optional reference line; highlighted items in blue, the rest in gray."""
+    labels = pd.Series(value_labels if value_labels is not None else [f"{v:.2f}" for v in values.values],
+                       index=values.index)
+    if sort:
+        values = values.sort_values(ascending=False)
+    if top:
+        values = values.head(top)
+    values = values.iloc[::-1]
+    labels = labels.reindex(values.index)
+    colors = [BLUE if highlight is None or idx in highlight else BEFORE for idx in values.index]
+    fig, ax = plt.subplots(figsize=(7.5, 0.38 * len(values) + 1.3))
+    ax.barh(values.index, values.values, color=colors, height=0.6)
+    offset = 0.01 * max(float(values.max()), reference or 0.0, 1e-9)
+    for i, (v, text) in enumerate(zip(values.values, labels.values)):
+        ax.text(v + offset, i, text, va="center", fontsize=8, color=INK_2)
+    if reference is not None:
+        ax.axvline(reference, color=REFERENCE, linewidth=1, linestyle="--")
+        ax.text(reference, len(values) - 0.4, f" {reference_label} ({reference:.2f})", color=REFERENCE, fontsize=8,
+                va="bottom")
+    if xlim:
+        ax.set_xlim(*xlim)
+    ax.set_xlabel(xlabel)
+    ax.set_title(title)
+    _value_grid(ax)
+    return _save(fig, path)
+
+
 def psi_bars(psi: pd.Series, threshold: float, path: Path, top: int = 15,
              title: str = "Feature drift between past and recent traffic") -> Path:
     psi = psi.sort_values(ascending=False).head(top).iloc[::-1]

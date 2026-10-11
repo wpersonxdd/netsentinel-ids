@@ -27,6 +27,7 @@ class ModelBundle:
     conf_threshold: float = 0.6
     label_mode: str = "family"
     metadata: dict = field(default_factory=dict)
+    conformal: Any = None           # MondrianConformal: per-family prediction sets with a coverage guarantee
 
     @property
     def classes(self) -> list[str]:
@@ -41,7 +42,7 @@ class ModelBundle:
         novel = anomaly > self.novelty.threshold_
         label = classifier_label.astype(object)
         label[(classifier_label == BENIGN) & novel] = UNKNOWN
-        return {
+        out = {
             "label": label.astype(str),
             "classifier_label": classifier_label,
             "confidence": proba.max(axis=1),
@@ -50,6 +51,11 @@ class ModelBundle:
             "anomaly_score": anomaly,
             "novel": novel,
         }
+        if self.conformal is not None:
+            sets = self.conformal.sets(proba)
+            out.update(prediction_set=sets, set_size=sets.sum(axis=1),
+                       possible_families=np.asarray(self.conformal.describe(sets)))
+        return out
 
     def alerts(self, X: pd.DataFrame, context: pd.DataFrame, y_true=None, prediction: dict | None = None) -> pd.DataFrame:
         prediction = prediction or self.predict(X)
@@ -58,7 +64,9 @@ class ModelBundle:
 
     def score_frame(self, raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Score raw flow records (any supported column naming). Returns (alerts, per-flow predictions)."""
-        X, context, y_true = prepare_for_inference(raw, self.numeric, self.categorical, self.label_mode)
+        time = self.metadata.get("time_parsing", {})
+        X, context, y_true = prepare_for_inference(raw, self.numeric, self.categorical, self.label_mode,
+                                                   time.get("dayfirst", False), time.get("add_12h_before_hour"))
         prediction = self.predict(X)
         per_flow = context.copy()
         per_flow["predicted_class"] = prediction["label"]

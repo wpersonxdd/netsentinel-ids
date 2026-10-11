@@ -19,14 +19,16 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.inspection import permutation_importance
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 
 from nids import BENIGN, UNKNOWN, __version__, plotting
 from nids.bundle import ModelBundle
 from nids.config import output_dirs
 from nids.data import PreparedData, Split, class_order, load_dataset, split_indices, stratified_subsample
 from nids.deep import TORCH_AVAILABLE
-from nids.evaluate import evaluate, headline
+from nids.audit import identifier_suspects, quality_table, shortcut_scan
+from nids.conformal import MondrianConformal, coverage_range, coverage_report
+from nids.evaluate import bootstrap_metrics, evaluate, headline
 from nids.feedback import load_feedback_examples
 from nids.models import MODEL_LABELS, MODELS, STRATEGY_LABELS, available_models, build_pipeline
 from nids.novelty import NoveltyDetector, psi_table
@@ -87,6 +89,7 @@ def dataset_summary(data: PreparedData, split: Split | None = None) -> dict:
         "dropped_duplicates": data.dropped_duplicates,
         "dropped_rare_classes": data.dropped_rare,
         "has_timestamps": data.time is not None,
+        "sampling": data.sampling,
     }
     if split is not None:
         out["split"] = {"train": len(split.train), "validation": len(split.val), "test": len(split.test)}
@@ -140,6 +143,11 @@ def choose_final_config(cfg: dict, results_dir: Path) -> tuple[str, str, str]:
         log.warning("deep_mlp selected but PyTorch is missing; falling back to hist_gb")
         model = "hist_gb"
     return model, strategy, reason
+
+
+def _fit_conformal(cfg: dict, pipe, X_cal: pd.DataFrame, y_cal: pd.Series) -> MondrianConformal:
+    """Per-class conformal thresholds calibrated on held-out flows the classifier never trained on."""
+    return MondrianConformal(cfg["conformal"]["alpha"]).fit(pipe.predict_proba(X_cal), y_cal, pipe.classes_)
 
 
 def _fit_novelty(cfg: dict, data: PreparedData, X_fit, y_fit, X_cal, y_cal, X_always=None) -> NoveltyDetector:
@@ -197,24 +205,50 @@ def run_benchmark(cfg: dict) -> dict:
                      m["macro_f1"], f"{m['rare_macro_f1']:.3f}" if m["rare_macro_f1"] is not None else "n/a",
                      m["detection_rate"], m["false_alarm_rate"], fit_s)
 
-    ok = [r for r in rows if "error" not in r]
-    if not ok:
+    if not [r for r in rows if "error" not in r]:
         raise RuntimeError("Every benchmark configuration failed; see the log above.")
-    metric = cfg["benchmark"]["selection_metric"]
-    best = max(ok, key=lambda r: (r.get(metric) or 0.0, r.get("rare_macro_recall") or 0.0))
     result = {
         "generated_at": _now(),
         "version": __version__,
         "dataset": dataset_summary(data, split),
         "evaluated_on": "validation",
-        "selection_metric": metric,
-        "best": {"model": best["model"], "strategy": best["strategy"], metric: best[metric]},
+        "selection_metric": cfg["benchmark"]["selection_metric"],
+        "val_support": {str(k): int(v) for k, v in y_va.value_counts().items()},
         "rows": rows,
     }
+    select_best(result, cfg["benchmark"].get("min_val_support", 10))
+    best = result["best"]
+    metric = result["selection_metric"]
     save_json(result, dirs["results"] / "benchmark.json")
     plot_benchmark(result, dirs["figures"])
-    log.info("Best configuration: %s + %s (%s %.4f)", best["model"], best["strategy"], metric, best[metric])
+    log.info("Best configuration: %s + %s (selection score %.4f on %s)", best["model"], best["strategy"],
+             best["selection_score"], ", ".join(result["selection_classes"]))
     return result
+
+
+def select_best(bench: dict, min_val_support: int = 10) -> dict:
+    """Pick the benchmark winner on classes with enough validation flows to be measured.
+
+    With 1-4 validation flows a class's F1 is 0 or 1 by the luck of one flow, and a 9-class macro-F1 then moves by
+    ~0.1, more than the real gap between good configurations. Such classes are still evaluated and reported; they
+    just do not decide which configuration wins. Adds ``selection_score`` to each row and ``best`` to ``bench``.
+    """
+    metric = bench["selection_metric"]
+    support = bench.get("val_support", {})
+    selection = [c for c, n in support.items() if n >= min_val_support] if support else []
+    excluded = sorted(c for c in support if c not in selection)
+    ok = [r for r in bench["rows"] if "error" not in r]
+    for r in ok:
+        if metric == "macro_f1" and selection and r.get("per_class_f1"):
+            r["selection_score"] = float(np.mean([r["per_class_f1"].get(c, 0.0) for c in selection]))
+        else:
+            r["selection_score"] = r.get(metric) or 0.0
+    best = max(ok, key=lambda r: (r["selection_score"], r.get("rare_macro_recall") or 0.0))
+    bench.update(min_val_support=min_val_support, selection_classes=sorted(selection),
+                 excluded_from_selection=excluded,
+                 best={"model": best["model"], "strategy": best["strategy"], metric: best[metric],
+                       "selection_score": best["selection_score"]})
+    return bench
 
 
 def plot_benchmark(bench: dict, figures: Path) -> None:
@@ -255,7 +289,9 @@ def run_train(cfg: dict) -> dict:
     pipe.fit(X_tr, y_tr)
     fit_s = time.perf_counter() - t0
     log.info("Fitted in %.0fs; fitting the no-imbalance-handling baseline for comparison", fit_s)
-    baseline_pipe = build_pipeline(model, "none", y_tr, data.numeric, data.categorical, cfg).fit(X_tr, y_tr)
+    compare = comparison_strategy(model, strategy, load_json(dirs["results"] / "benchmark.json"))
+    log.info("Comparison model: %s + %s", model, compare)
+    baseline_pipe = build_pipeline(model, compare, y_tr, data.numeric, data.categorical, cfg).fit(X_tr, y_tr)
 
     novelty = _fit_novelty(cfg, data, X_tr, y_tr, X_va, y_va)
     bundle = ModelBundle(
@@ -267,6 +303,7 @@ def run_train(cfg: dict) -> dict:
         severity=cfg["triage"]["severity"],
         conf_threshold=cfg["triage"]["confidence_threshold"],
         label_mode=cfg["data"]["label_mode"],
+        conformal=_fit_conformal(cfg, pipe, X_va, y_va),
     )
 
     t0 = time.perf_counter()
@@ -278,6 +315,22 @@ def run_train(cfg: dict) -> dict:
     m_base = evaluate(y_te, base_pred, base_proba, base_classes)
     log.info("Test macro-F1: baseline %.3f -> final %.3f (hybrid %.3f)",
              m_base["macro_f1"], m_clf["macro_f1"], m_hyb["macro_f1"])
+
+    log.info("Bootstrap confidence intervals (%d stratified resamples)", cfg["evaluation"]["bootstrap"])
+    boot = bootstrap_metrics(
+        y_te, {"baseline": base_pred, "classifier": pred["classifier_label"], "hybrid": pred["label"]},
+        pairs=[("baseline", "classifier"), ("classifier", "hybrid")], n_boot=cfg["evaluation"]["bootstrap"],
+        seed=cfg["seed"])
+    conformal = coverage_report(pred["prediction_set"], y_te, pred["classes"], BENIGN)
+    cp = bundle.conformal
+    conformal.update(alpha=cp.alpha, target_coverage=1 - cp.alpha,
+                     thresholds=dict(zip(cp.classes_, cp.thresholds_.round(4))),
+                     calibration_flows=dict(zip(cp.classes_, cp.n_calibration_.tolist())),
+                     guaranteed=dict(zip(cp.classes_, cp.guaranteed_.tolist())),
+                     expected_coverage_range={c: coverage_range(int(n), cp.alpha)
+                                              for c, n in zip(cp.classes_, cp.n_calibration_)})
+    log.info("Conformal (alpha %.2f): mean set size %.2f, singleton rate %.1f%%", bundle.conformal.alpha,
+             conformal["mean_set_size"], 100 * conformal["singleton_rate"])
 
     log.info("Permutation feature importance on the validation set")
     pos = stratified_subsample(y_va, cfg["explain"]["permutation_rows"], cfg["seed"], min_per_class=50)
@@ -302,6 +355,8 @@ def run_train(cfg: dict) -> dict:
         "classes": bundle.classes,
         "test_macro_f1": m_clf["macro_f1"],
         "test_rare_macro_f1": m_clf["rare_macro_f1"],
+        "time_parsing": {"dayfirst": cfg["data"].get("time_dayfirst", False),
+                         "add_12h_before_hour": cfg["data"].get("time_add_12h_before_hour")},
     }
     model_path = bundle.save(dirs["artifacts"] / MODEL_FILE)
     log.info("Saved model bundle to %s", model_path)
@@ -318,6 +373,7 @@ def run_train(cfg: dict) -> dict:
         "model": model,
         "strategy": strategy,
         "selected_because": reason,
+        "comparison_strategy": compare,
         "dataset": dataset_summary(data, split),
         "fit_seconds": round(fit_s, 1),
         "predict_ms_per_1k_flows": round(pred_s / len(X_te) * 1e6, 2),
@@ -325,6 +381,8 @@ def run_train(cfg: dict) -> dict:
         "novelty_threshold": novelty.threshold_,
         "benign_fpr_budget": cfg["novelty"]["benign_fpr"],
         "metrics": {"baseline": m_base, "classifier": m_clf, "hybrid": m_hyb},
+        "bootstrap": boot,
+        "conformal": conformal,
         "feature_importance": importance.head(20).round(5).to_dict("index"),
         "alerts": {
             "total": int(len(alerts)),
@@ -344,15 +402,147 @@ def run_train(cfg: dict) -> dict:
     return result
 
 
+def strategy_text(strategy: str) -> str:
+    return "no imbalance handling" if strategy == "none" else STRATEGY_LABELS[strategy]
+
+
+def comparison_strategy(model: str, strategy: str, bench: dict | None) -> str:
+    """What the deployed model is compared against on the test set.
+
+    Normally the same model *without* imbalance handling. If the natural distribution itself won the benchmark, the
+    comparison flips to the same model with its best imbalance strategy, so the report still answers "what does
+    imbalance handling do here?" instead of comparing a model with itself.
+    """
+    if strategy != "none":
+        return "none"
+    rows = [r for r in (bench or {}).get("rows", [])
+            if r.get("model") == model and r.get("strategy") != "none" and "error" not in r]
+    if not rows:
+        return "class_weight"
+    return max(rows, key=lambda r: r.get("selection_score", r.get("macro_f1") or 0.0))["strategy"]
+
+
 def plot_final(final: dict, figures: Path) -> None:
     label = MODEL_LABELS[final["model"]]
     m = final["metrics"]
+    compare = final.get("comparison_strategy", "none")
     plotting.before_after(
         pd.Series({c: v["f1"] for c, v in m["baseline"]["per_class"].items()}),
         pd.Series({c: v["f1"] for c, v in m["classifier"]["per_class"].items()}),
         figures / "per_class_f1.png", "Per-class F1 on the test set",
-        before_label=f"{label}, no imbalance handling",
-        after_label=f"{label} + {STRATEGY_LABELS[final['strategy']]}", xlabel="F1")
+        before_label=f"{label}, {strategy_text(compare)}",
+        after_label=f"{label}, {strategy_text(final['strategy'])} (deployed)", xlabel="F1")
+    if final.get("conformal"):
+        per_class = pd.DataFrame(final["conformal"]["per_class"]).T
+        labels = [f"{cov:.0%} · set {size:.2f}" for cov, size in zip(per_class["coverage"], per_class["mean_set_size"])]
+        plotting.ranked_bars(
+            per_class["coverage"], figures / "conformal_coverage.png",
+            f"Per-family coverage of conformal prediction sets (target {final['conformal']['target_coverage']:.0%})",
+            "Share of test flows whose true family is in the set", reference=final["conformal"]["target_coverage"],
+            reference_label="guarantee", value_labels=labels, sort=False, xlim=(0, 1.15))
+
+
+# --------------------------------------------------------------------------------------------------
+# 2b. data audit and evaluation protocols
+# --------------------------------------------------------------------------------------------------
+
+
+def run_audit(cfg: dict) -> dict:
+    """Data quality, identifier-like columns, and a single-feature shortcut scan."""
+    dirs = output_dirs(cfg)
+    data = load_dataset(cfg["data"], cfg["seed"])
+    final = load_json(dirs["results"] / "final.json")
+    full = final["metrics"]["classifier"]["macro_f1"] if final else None
+    log.info("Audit: scanning %d features for shortcuts", len(data.feature_columns))
+    quality = quality_table(data)
+    scan = shortcut_scan(data, full, seed=cfg["seed"])
+    result = {
+        "generated_at": _now(),
+        "rows": int(len(data.y)),
+        "features": len(data.feature_columns),
+        "dropped_duplicates": data.dropped_duplicates,
+        "dropped_rare_classes": data.dropped_rare,
+        "missing_rates": quality.loc[quality["missing_rate"] > 0, "missing_rate"].round(5).to_dict(),
+        "identifier_suspects": identifier_suspects(data),
+        "full_model_macro_f1": full,
+        "shortcut_scan": scan.round(4).reset_index().to_dict("records"),
+        "flagged": scan.index[scan["flag"] != ""].tolist(),
+    }
+    save_json(result, dirs["results"] / "audit.json")
+    plot_audit(result, dirs["figures"])
+    log.info("Audit: %d features flagged for review: %s", len(result["flagged"]), result["flagged"])
+    return result
+
+
+def plot_audit(audit: dict, figures: Path) -> None:
+    scan = pd.DataFrame(audit["shortcut_scan"]).set_index("feature")
+    plotting.ranked_bars(
+        scan["single_feature_macro_f1"], figures / "shortcut_scan.png",
+        "Shortcut scan: macro-F1 reachable from one feature alone",
+        "Macro-F1 of a depth-4 tree using only this feature (3-fold CV)",
+        reference=audit.get("full_model_macro_f1"), reference_label="full model",
+        highlight=set(audit["flagged"]), top=15)
+
+
+def session_groups(data: PreparedData, window: str = "1h") -> np.ndarray | None:
+    """Session key per flow: source + destination + time window. None when addresses are unavailable."""
+    ctx = data.context
+    if not {"src_ip", "dst_ip"} <= set(ctx.columns):
+        return None
+    key = ctx["src_ip"].astype(str) + "|" + ctx["dst_ip"].astype(str)
+    if "timestamp" in ctx.columns:
+        key = key + "|" + pd.to_datetime(ctx["timestamp"]).dt.floor(window).astype(str)
+    return pd.factorize(key)[0]
+
+
+def run_protocols(cfg: dict) -> dict:
+    """How optimistic is the headline number? Same model under three train/test protocols.
+
+    * random     - stratified random split (the usual protocol; flows of one session can sit in train and test),
+    * session    - session-grouped split: all flows sharing source, destination and hour stay on one side,
+    * temporal   - oldest flows train, newest flows test (families that only appear later cannot be known).
+    Classifier-only predictions, so the numbers isolate the protocol effect.
+    """
+    data, split, dirs = _prepare(cfg)
+    model, strategy, _ = choose_final_config(cfg, dirs["results"])
+    seed = cfg["seed"]
+    X, y = data.X, data.y
+    protocols: dict[str, dict] = {}
+
+    def fit_eval(name: str, train_idx: np.ndarray, test_idx: np.ndarray, note: str) -> None:
+        X_fit, y_fit = _trainable(X.iloc[train_idx], y.iloc[train_idx], f"Protocol {name}")
+        log.info("Protocol %s: %d train / %d test flows", name, len(y_fit), len(test_idx))
+        pipe = build_pipeline(model, strategy, y_fit, data.numeric, data.categorical, cfg).fit(X_fit, y_fit)
+        pred, proba, classes = _predict(pipe, X.iloc[test_idx])
+        y_test = y.iloc[test_idx]
+        m = evaluate(y_test, pred, proba, classes)
+        boot = bootstrap_metrics(y_test, {name: pred}, n_boot=cfg["evaluation"]["bootstrap"] // 2, seed=seed)
+        protocols[name] = {
+            **headline(m), "ci": boot["models"][name], "train_flows": int(len(y_fit)), "test_flows": int(len(test_idx)),
+            "unseen_in_training": sorted(set(y_test) - set(y_fit)),
+            "per_class_f1": {c: v["f1"] for c, v in m["per_class"].items()}, "note": note,
+        }
+        log.info("Protocol %s: macro-F1 %.3f, rare-class F1 %s", name, m["macro_f1"],
+                 f"{m['rare_macro_f1']:.3f}" if m["rare_macro_f1"] is not None else "n/a")
+
+    fit_eval("random", split.train, split.test, "stratified random 70/10/20 split, as in the headline results")
+    groups = session_groups(data, cfg["protocols"]["session_window"])
+    if groups is not None:
+        sgkf = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=seed)
+        train_idx, test_idx = next(sgkf.split(np.zeros(len(y)), y, groups))
+        shared = len(set(groups[train_idx]) & set(groups[test_idx]))
+        fit_eval("session", train_idx, test_idx,
+                 f"no session (source, destination, {cfg['protocols']['session_window']} window) spans train and test "
+                 f"({shared} shared)")
+    if data.time is not None:
+        order = np.argsort(data.time.to_numpy(), kind="stable")
+        cut = int(len(order) * cfg["drift"]["past_fraction"])
+        fit_eval("temporal", np.sort(order[:cut]), np.sort(order[cut:]),
+                 f"oldest {cfg['drift']['past_fraction']:.0%} of flows train, newest test")
+
+    result = {"generated_at": _now(), "model": model, "strategy": strategy, "protocols": protocols}
+    save_json(result, dirs["results"] / "protocols.json")
+    return result
 
 
 # --------------------------------------------------------------------------------------------------
@@ -635,22 +825,25 @@ def run_retrain(cfg: dict, feedback_path: str | Path, model_file: str | Path | N
         severity=old.severity,
         conf_threshold=old.conf_threshold,
         label_mode=old.label_mode,
+        conformal=_fit_conformal(cfg, pipe, X_va[cols], y_va),
         metadata={**old.metadata, "trained_at": _now(), "retrained_from": old.metadata.get("trained_at"),
                   "feedback_flows": int(len(y_fb)), "feedback_file": str(feedback_path)},
     )
     new.metadata["classes"] = new.classes
 
-    def score(bundle: ModelBundle) -> tuple[dict, dict]:
+    def score(bundle: ModelBundle) -> tuple[dict, dict, np.ndarray]:
         pred = bundle.predict(X_ev)
         metrics = evaluate(y_ev, pred["label"], pred["proba"], pred["classes"])
         alerts = bundle.alerts(X_ev, data.context.iloc[eval_pos].reset_index(drop=True), prediction=pred)
         incidents, _ = group_incidents(alerts)
         volume = {"alerts": int(len(alerts)), "incidents": int(len(incidents)),
                   "unknown_alerts": int((alerts["predicted_class"] == UNKNOWN).sum()) if len(alerts) else 0}
-        return metrics, volume
+        return metrics, volume, pred["label"]
 
-    m_old, v_old = score(old)
-    m_new, v_new = score(new)
+    m_old, v_old, labels_old = score(old)
+    m_new, v_new, labels_new = score(new)
+    boot = bootstrap_metrics(y_ev, {"before": labels_old, "after": labels_new}, pairs=[("before", "after")],
+                             n_boot=cfg["evaluation"]["bootstrap"], seed=cfg["seed"])
     new.metadata["test_macro_f1"] = m_new["macro_f1"]
 
     out_path = Path(out_path) if out_path else model_file
@@ -678,6 +871,7 @@ def run_retrain(cfg: dict, feedback_path: str | Path, model_file: str | Path | N
                        "evaluated_flows": int(len(eval_pos))},
         "metrics": {"before": m_old, "after": m_new},
         "alert_volume": {"before": v_old, "after": v_new},
+        "bootstrap": boot,
         "artifacts": {"model": str(out_path), "archived_previous": str(archived) if archived else None},
     }
     save_json(result, dirs["results"] / "retrain.json")

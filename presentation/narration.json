@@ -1,0 +1,62 @@
+[
+  {
+    "image": "docs/media/slides/01_cover.png",
+    "text": "Hello. This is NetSentinel, my solution for DataNova problem DN-CY-01: network intrusion detection with highly imbalanced threat data. I will show the problem, how NetSentinel solves it, and how it performs on real network traffic."
+  },
+  {
+    "image": "docs/media/slides/02_problem.png",
+    "text": "A network carries millions of normal connections, and attacks hide among them. In the real traffic I used, the rarest attack family is one flow in forty-five thousand. That breaks naive machine learning: a detector that calls everything normal looks eighty percent accurate and catches zero attacks."
+  },
+  {
+    "image": "docs/media/slides/03_answers.png",
+    "text": "NetSentinel treats this as four connected problems. Attacks are rare, so training is rebalanced. New attack types appear, so a second detector learns what normal traffic looks like and flags anything unfamiliar. Tactics change, so a drift monitor notices the shift without labels. And analysts drown in alerts, so alerts become explained incidents, and analyst decisions retrain the model."
+  },
+  {
+    "image": "docs/media/slides/04_pipeline.png",
+    "text": "Flow records, one row per connection, are cleaned and audited. Two detectors work side by side: a rebalanced ensemble for known attacks and a novelty detector for unfamiliar ones. Alerts are grouped into incidents with a priority, a reason and a first response. The analyst confirms or rejects them, and the model retrains. One command runs everything and writes a full evaluation report."
+  },
+  {
+    "image": "docs/media/slides/05_data.png",
+    "text": "For real traffic I used CIC-IDS2017 from the Canadian Institute for Cybersecurity: 2.8 million flows over five working days, nine attack families, and forty-five thousand to one between the largest and the smallest family. The data is messy, and the pipeline repairs it automatically: a twelve-hour clock without A M or P M, almost three hundred thousand empty rows, and three hundred thousand duplicates."
+  },
+  {
+    "image": "docs/media/slides/06_results.png",
+    "text": "On 121 thousand test flows, 99.9 percent of attack flows raise an alert, and only 0.1 percent of normal flows raise a false alarm. Macro F1, which weights every family equally, rises from 0.766 to 0.973 with rebalancing. Honestly, most of that jump comes from nine test flows of the two rarest families. On families with enough test data, the gain is small but statistically significant."
+  },
+  {
+    "image": "docs/media/slides/07_yesterday.png",
+    "text": "This is the most important slide. A random split gives 0.973. Keeping whole attack sessions on one side gives 0.888. Training on the past and testing on the future gives only 0.18, because every attack in this dataset happens on a single day, and the model has never seen Friday's attacks. A supervised detector only knows yesterday's attacks. That is why NetSentinel adds a novelty detector and fast retraining."
+  },
+  {
+    "image": "docs/media/slides/08_novel.png",
+    "text": "To test attacks the model has never seen, each family is hidden from training in turn. The classifier alone catches almost none of it. With the novelty detector, web attacks go from 3 to 87 percent, and DoS from 3 to 71 percent. On average, 5 percent becomes 33 percent, for about one percent extra false alarms. Port scans, brute force and botnets look normal at flow level, and I state that limit openly."
+  },
+  {
+    "image": "docs/media/slides/09_drift.png",
+    "text": "Trained on Monday to Thursday morning, the model scores 0.998 on that period, but only 0.182 on the following days. The drift monitor noticed this without any labels: alerted traffic shifted, and unknown anomalies rose from 0.9 to 5.4 percent. After retraining on ten percent of the new flows, the score recovers to 0.925."
+  },
+  {
+    "image": "docs/media/slides/10_console.png",
+    "text": "Detection is only useful if a person can act on it. The console groups 22,601 flow alerts into 483 incidents, one per attack family, shared endpoint and time window: 47 times fewer items to open, each with a priority from one to four."
+  },
+  {
+    "image": "docs/media/screens/console_scored.png",
+    "text": "Here the console scores five thousand flows held out from training: 952 alerts become 60 incidents, 14 of them top priority. Flows the novelty detector cannot explain get their own Unknown-Anomaly incidents, so a person reviews them instead of the model guessing a family."
+  },
+  {
+    "image": "docs/media/slides/11_incident.png",
+    "text": "Each incident explains itself: the features furthest from normal traffic, the possible attack families with a ninety percent guarantee per family from conformal prediction, and a first response. One analyst decision labels the whole incident, and the model retrains on it."
+  },
+  {
+    "image": "docs/media/slides/12_trust.png",
+    "text": "Every number can be checked: confidence intervals on every headline result, three test protocols side by side, an automatic data audit for shortcuts and leakage, and a reproducible pipeline with eighty-one automated tests."
+  },
+  {
+    "image": "docs/media/slides/13_limits.png",
+    "text": "The limits are clear. Port scans and botnets look normal at flow level, the novelty detector costs about one percent false alarms, and the dataset is from 2017. Next, I would pair NetSentinel with payload inspection such as Zeek or Suricata, tune the alert budget to the team, and re-run on the official DataNova data with one command."
+  },
+  {
+    "image": "docs/media/slides/14_closing.png",
+    "text": "NetSentinel finds rare attacks, flags new ones, and keeps analysts in the loop, with honest numbers on real traffic. The code, the full report and this video are on GitHub. Thank you."
+  }
+]

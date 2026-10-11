@@ -8,6 +8,9 @@ NetSentinel treats intrusion detection as four connected problems, not one class
 3. **Non-stationarity.** Attack patterns and the network itself change over time.
 4. **Humans act on the output.** A SOC analyst needs a short, ranked, explained queue, not a probability vector.
 
+And one cross-cutting question: **how much should anyone trust the numbers?** §4.1 answers it with a data audit,
+bootstrap confidence intervals and three evaluation protocols; §4.2 adds per-family conformal guarantees.
+
 ```mermaid
 flowchart LR
     A[Flow records<br/>CSV / Parquet<br/>any schema] --> B[Loader & cleaning<br/>schema normalisation<br/>label families<br/>dedup · leakage guards]
@@ -17,6 +20,8 @@ flowchart LR
     C --> F[Novelty detector<br/>LOF on benign traffic<br/>calibrated 1% FPR]
     E --> G{Hybrid decision}
     F --> G
+    E --> CS[Conformal sets<br/>per-family 90% coverage<br/>guarantee]
+    CS --> H
     G --> H[Alert triage<br/>severity × confidence → P1–P4<br/>explanation · playbook]
     H --> I[Analyst console<br/>Streamlit]
     I -- decisions = new labels --> J[Retraining]
@@ -61,8 +66,13 @@ validation or test data.
 | Deep MLP (PyTorch) | 3 hidden layers, batch-norm, dropout, **focal loss** (γ = 2): down-weights easy benign flows so gradients come from hard, rare attacks. Early stopping on validation macro-F1 |
 | Soft-voting ensemble | RF + GBM + MLP probabilities averaged; different inductive biases make errors less correlated |
 
-Every model × every strategy is benchmarked; the configuration with the best validation macro-F1 (ties broken by
-rare-class recall) is deployed.
+Every model × every strategy is benchmarked; the configuration with the best validation **selection score** (ties
+broken by rare-class recall) is deployed. The selection score is macro-F1 over the families with at least 10 validation
+flows (`benchmark.min_val_support`). On real data some families are tiny: CIC-IDS2017 leaves 1 Heartbleed and
+4 Infiltration flows in validation, so their F1 is 0 or 1 by the luck of one flow, and a 9-family macro-F1 would swing by
+~0.1, more than the real gap between good configurations. Those families are still trained on, evaluated and reported;
+they just do not decide the winner. If the natural class distribution wins, the test-set comparison is made against
+the same model with its best imbalance strategy, so the report always answers "what does imbalance handling do here?".
 
 ## 4. Evaluation protocol
 
@@ -80,6 +90,47 @@ Accuracy is not reported as a headline: predicting "benign" for every flow alrea
 
 The final model is compared against **the same model trained without imbalance handling** on the same test set,
 so the gain from imbalance handling is isolated from model choice.
+
+### 4.1 How much to trust a number
+
+| Check | What it answers | Where |
+|---|---|---|
+| **Data audit** (`nids audit`) | Missing values; numeric columns that track row order or time (IDs, counters, clocks); a **shortcut scan** that trains a depth-4 tree on every feature *alone* and flags features that nearly match the full model or perfectly isolate one family | REPORT §1 |
+| **Stratified bootstrap CIs** | 95% interval for every headline metric. Resampling is done *within* each class, so a family with 29 test flows never vanishes from a resample | REPORT §3 |
+| **Paired bootstrap** | Baseline and final model scored on the same resamples: CI of the *difference* and the share of resamples where the final model was not better, i.e. is the gain luck? | REPORT §3.1, §8 |
+| **Three protocols** (`nids protocols`) | Same configuration under a stratified random split, a **session-grouped** split (all flows sharing source, destination and hour stay on one side, via `StratifiedGroupKFold`) and a **temporal** split. Random splits are the field's default and the most optimistic; the gap shows how much | REPORT §3.2 |
+
+Random splits are known to inflate IDS results when flows of one attack session land in both train and test. The
+session-grouped protocol measures that leakage instead of assuming it away, and the temporal protocol is the estimate
+to quote for deployment.
+
+### 4.2 New: per-family guarantees with conformal prediction
+
+A predicted probability of 0.7 is not a guarantee of anything. **Mondrian (class-conditional) split-conformal
+prediction** turns the classifier's probabilities into a *set* of plausible families per flow:
+
+1. On the validation split (never used for training), compute for each flow the nonconformity score
+   `1 − p(true family)`.
+2. **Per family** `c`, take the ⌈(n_c + 1)(1 − α)⌉-th smallest score as threshold `q_c` (finite-sample correction).
+3. For a new flow, the set is every family `c` with `1 − p(c) ≤ q_c`, plus the most probable family, so a set is
+   never empty.
+
+**Guarantee:** if calibration and new flows are exchangeable, the true family is in the set for ≥ 1 − α of flows
+(α = 0.1 → 90%) **of every family separately**. A standard (marginal) conformal guarantee would hold on average over
+all flows. With 80% benign traffic it would say almost nothing about a family that is 0.2% of flows, which is exactly
+where this problem lives.
+
+How NetSentinel uses it:
+
+- every alert shows **possible families** ("WebAttack | Benign") instead of one over-confident label;
+- an alert whose set holds **more than one family needs review**: a second trigger next to low confidence. The two
+  are complementary: thresholds differ per family, so a 50/50 flow can still receive a one-family set, while a
+  confident flow can be ambiguous between two families whose thresholds are loose;
+- **the price of a guarantee:** alerting whenever *any* attack family is in the set gives every family a recall
+  floor of 1 − α. The report shows what that floor would cost in false alarms, so a SOC can choose the operating
+  point knowingly;
+- families with too few calibration flows for a non-trivial threshold are listed: honest about where the guarantee
+  is vacuous.
 
 ## 5. Novel attacks (open world)
 
@@ -134,7 +185,8 @@ When timestamps exist, the drift experiment trains on the oldest 65% of traffic 
 | Severity | Attack family → none / low / medium / high / critical (`triage.severity` in the config) |
 | Priority score | `severity_weight × (0.5 + 0.5 × confidence) + 0.1 × anomalous`, so a confident critical alert outranks an unsure medium one |
 | P1–P4 | Cut points 0.70 / 0.45 / 0.25 |
-| Needs review | Confidence < 0.6 or unknown family |
+| Possible families | The conformal prediction set (§4.2) |
+| Needs review | Confidence < 0.6, OR the conformal set holds more than one family, OR the family is unknown |
 | Explanation | The features deviating most from the benign median, in IQR units ("`conn_count_same_dst_10s`=148, 49 IQR above benign median 3"). Model-agnostic and readable without ML knowledge |
 | Recommended action | Per-family first-response playbook |
 | Global explanation | Permutation importance: drop in validation macro-F1 when a feature is shuffled |

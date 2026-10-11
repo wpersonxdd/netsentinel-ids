@@ -7,11 +7,14 @@ pipeline runs on the synthetic demo data today and on the official hackathon dat
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import joblib
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -200,22 +203,46 @@ def detect_label_column(df: pd.DataFrame, preferred: str | None = None) -> str:
     return (multiclass or present)[0]
 
 
-def parse_time(series: pd.Series) -> pd.Series | None:
-    """Parse epoch seconds/milliseconds or date strings; None when the column is not a usable time."""
+_DAYFIRST_FORMATS = ["%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%d/%m/%Y %I:%M:%S %p", "%d/%m/%Y %I:%M %p"]
+
+
+def parse_time(series: pd.Series, dayfirst: bool = False, add_12h_before_hour: int | None = None) -> pd.Series | None:
+    """Parse epoch seconds/milliseconds or date strings; None when the column is not a usable time.
+
+    ``dayfirst``: dates like 7/7/2017 are day/month/year (CIC-IDS2017). ``add_12h_before_hour``: repair a 12-hour
+    clock written without AM/PM; hours below this value get +12 h. CIC-IDS2017 captured 08:00-18:00 and writes
+    afternoon flows as 1:00-5:00, so ``8`` restores the true order.
+    """
     numeric = pd.to_numeric(series, errors="coerce")
     if numeric.notna().mean() > 0.9:
         unit = "ms" if numeric.median() > 1e12 else "s"
         parsed = pd.to_datetime(numeric, unit=unit, errors="coerce")
+    elif dayfirst:
+        text = series.astype(str).str.strip()
+        parsed = pd.Series(pd.NaT, index=series.index, dtype="datetime64[ns]")
+        for fmt in _DAYFIRST_FORMATS:  # files of one dataset can mix formats
+            missing = parsed.isna()
+            if not missing.any():
+                break
+            parsed[missing] = pd.to_datetime(text[missing], format=fmt, errors="coerce")
+        missing = parsed.isna()
+        if missing.any():  # ISO timestamps (e.g. re-exported data) are unambiguous
+            parsed[missing] = pd.to_datetime(text[missing], format="ISO8601", errors="coerce")
     else:
         parsed = pd.to_datetime(series, errors="coerce")
-    return parsed if parsed.notna().mean() > 0.5 else None
+    if parsed.notna().mean() <= 0.5:
+        return None
+    if add_12h_before_hour is not None:
+        parsed = parsed.where(parsed.dt.hour >= add_12h_before_hour, parsed + pd.Timedelta(hours=12))
+    return parsed
 
 
-def detect_time_column(df: pd.DataFrame, preferred: str | None = None) -> tuple[str | None, pd.Series | None]:
+def detect_time_column(df: pd.DataFrame, preferred: str | None = None, dayfirst: bool = False,
+                       add_12h_before_hour: int | None = None) -> tuple[str | None, pd.Series | None]:
     candidates = [normalize_columns(pd.DataFrame(columns=[preferred])).columns[0]] if preferred else TIME_CANDIDATES
     for col in candidates:
         if col in df.columns:
-            parsed = parse_time(df[col])
+            parsed = parse_time(df[col], dayfirst, add_12h_before_hour)
             if parsed is not None:
                 return col, parsed
     return None, None
@@ -303,6 +330,7 @@ class PreparedData:
     source: str
     dropped_duplicates: int = 0
     dropped_rare: dict[str, int] = field(default_factory=dict)
+    sampling: dict | None = None  # set when a stratified subsample of the cleaned data is used
 
     @property
     def classes(self) -> list[str]:
@@ -313,8 +341,44 @@ class PreparedData:
         return self.numeric + self.categorical
 
 
+LOADER_VERSION = 3  # bump when preparation logic changes, to invalidate cached datasets
+
+
+def _cache_path(data_cfg: dict, seed: int) -> Path:
+    """Cache file keyed by the data config, the seed and every source file's size and modification time."""
+    path = Path(data_cfg["path"]).resolve()
+    files = sorted(p for p in path.rglob("*") if p.is_file()) if path.is_dir() else [path]
+    fingerprint = {  # independent of how the path is written (relative from the CLI, absolute from the console)
+        "cfg": {k: v for k, v in data_cfg.items() if k not in ("cache", "cache_dir", "path")},
+        "seed": seed,
+        "loader": LOADER_VERSION,
+        "files": [(f.relative_to(path).as_posix() if path.is_dir() else f.name, f.stat().st_size,
+                   int(f.stat().st_mtime)) for f in files],
+    }
+    digest = hashlib.sha1(json.dumps(fingerprint, sort_keys=True, default=str).encode()).hexdigest()[:16]
+    return Path(data_cfg.get("cache_dir", "data/processed")) / f"prepared_{digest}.joblib"
+
+
 def load_dataset(data_cfg: dict, seed: int = 42) -> PreparedData:
-    """Read, clean and label a dataset according to the ``data`` section of the config."""
+    """Read, clean and label a dataset according to the ``data`` section of the config.
+
+    With ``data.cache: true`` the prepared dataset is stored under ``data/processed`` and reused while the source
+    files and the data config are unchanged (large datasets take minutes to parse).
+    """
+    if data_cfg.get("cache"):
+        cache = _cache_path(data_cfg, seed)
+        if cache.exists():
+            log.info("Using cached prepared dataset %s", cache)
+            return joblib.load(cache)
+        prepared = _load_dataset(data_cfg, seed)
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        joblib.dump(prepared, cache)
+        log.info("Cached prepared dataset to %s", cache)
+        return prepared
+    return _load_dataset(data_cfg, seed)
+
+
+def _load_dataset(data_cfg: dict, seed: int) -> PreparedData:
     raw = read_table(data_cfg["path"])
     label_col = detect_label_column(raw, data_cfg.get("label_column"))
     log.info("Label column: %s", label_col)
@@ -327,7 +391,8 @@ def load_dataset(data_cfg: dict, seed: int = 42) -> PreparedData:
         labels = labels.where(~(blank & normal), BENIGN)
     y = normalize_labels(labels, data_cfg.get("label_mode", "family"))
 
-    time_col, time = detect_time_column(raw, data_cfg.get("time_column"))
+    time_col, time = detect_time_column(raw, data_cfg.get("time_column"), data_cfg.get("time_dayfirst", False),
+                                        data_cfg.get("time_add_12h_before_hour"))
     context = extract_context(raw, time)
 
     label_like = {c for c in LABEL_CANDIDATES if c in raw.columns}
@@ -356,8 +421,12 @@ def load_dataset(data_cfg: dict, seed: int = 42) -> PreparedData:
     X, y, context = X[keep], y[keep], context[keep]
     time = time[keep] if time is not None else None
 
-    if data_cfg.get("max_rows"):
-        pos = stratified_subsample(y, int(data_cfg["max_rows"]), seed)
+    sampling = None
+    if data_cfg.get("max_rows") and len(y) > int(data_cfg["max_rows"]):
+        min_per_class = int(data_cfg.get("min_per_class", 1000))
+        sampling = {"rows_before": int(len(y)), "max_rows": int(data_cfg["max_rows"]), "min_per_class": min_per_class,
+                    "class_counts_before": {str(k): int(v) for k, v in y.value_counts().items()}}
+        pos = stratified_subsample(y, int(data_cfg["max_rows"]), seed, min_per_class)
         X, y, context = X.iloc[pos], y.iloc[pos], context.iloc[pos]
         time = time.iloc[pos] if time is not None else None
 
@@ -365,14 +434,15 @@ def load_dataset(data_cfg: dict, seed: int = 42) -> PreparedData:
     time = time.reset_index(drop=True) if time is not None else None
     log.info("Prepared %d rows, %d classes: %s", len(y), y.nunique(), y.value_counts().to_dict())
     return PreparedData(X, y, context, time, numeric, categorical, label_col, str(data_cfg["path"]),
-                        n_dupes, rare.to_dict())
+                        n_dupes, rare.to_dict(), sampling)
 
 
-def prepare_for_inference(df: pd.DataFrame, numeric: list[str], categorical: list[str],
-                          label_mode: str = "family") -> tuple[pd.DataFrame, pd.DataFrame, pd.Series | None]:
+def prepare_for_inference(df: pd.DataFrame, numeric: list[str], categorical: list[str], label_mode: str = "family",
+                          time_dayfirst: bool = False, time_add_12h_before_hour: int | None = None
+                          ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series | None]:
     """Turn new raw traffic into the trained feature layout. Returns (X, context, true labels or None)."""
     df = normalize_columns(df)
-    _, time = detect_time_column(df)
+    _, time = detect_time_column(df, None, time_dayfirst, time_add_12h_before_hour)
     context = extract_context(df, time)
     y = None
     present = [c for c in LABEL_CANDIDATES if c in df.columns]

@@ -1,0 +1,886 @@
+{
+  "generated_at": "2026-10-11T08:23:42+00:00",
+  "version": "0.1.0",
+  "model": "ensemble",
+  "strategy": "smote",
+  "selected_because": "best validation macro_f1 in the benchmark",
+  "comparison_strategy": "none",
+  "dataset": {
+    "source": "data/raw/cicids2017",
+    "rows": 605980,
+    "features": 71,
+    "numeric_features": 71,
+    "categorical_features": 0,
+    "label_column": "label",
+    "class_counts": {
+      "Benign": 498702,
+      "Botnet": 1953,
+      "BruteForce": 5000,
+      "DDoS": 30449,
+      "DoS": 46084,
+      "Exploit": 11,
+      "Infiltration": 36,
+      "PortScan": 21602,
+      "WebAttack": 2143
+    },
+    "imbalance_ratio": 45336.545454545456,
+    "dropped_duplicates": 308218,
+    "dropped_rare_classes": {},
+    "has_timestamps": true,
+    "sampling": {
+      "rows_before": 2522525,
+      "max_rows": 600000,
+      "min_per_class": 5000,
+      "class_counts_before": {
+        "Benign": 2096647,
+        "DoS": 193748,
+        "DDoS": 128016,
+        "PortScan": 90819,
+        "BruteForce": 9152,
+        "WebAttack": 2143,
+        "Botnet": 1953,
+        "Infiltration": 36,
+        "Exploit": 11
+      }
+    },
+    "split": {
+      "train": 424186,
+      "validation": 60598,
+      "test": 121196
+    }
+  },
+  "fit_seconds": 409.1,
+  "predict_ms_per_1k_flows": 43.38,
+  "novelty_method": "lof",
+  "novelty_threshold": 4.594893160669463,
+  "benign_fpr_budget": 0.01,
+  "metrics": {
+    "baseline": {
+      "n": 121196,
+      "accuracy": 0.9983662827156011,
+      "macro_f1": 0.76553573845615,
+      "supported_macro_f1": 0.9842602351579072,
+      "supported_classes": [
+        "Benign",
+        "Botnet",
+        "BruteForce",
+        "DDoS",
+        "DoS",
+        "PortScan",
+        "WebAttack"
+      ],
+      "tiny_classes": {
+        "Exploit": {
+          "support": 2,
+          "found": 0
+        },
+        "Infiltration": {
+          "support": 7,
+          "found": 0
+        }
+      },
+      "macro_recall": 0.765099299418386,
+      "weighted_f1": 0.9983312615546202,
+      "mcc": 0.994781009944708,
+      "attack_macro_f1": 0.736345508516244,
+      "rare_classes": [
+        "Botnet",
+        "BruteForce",
+        "Exploit",
+        "Infiltration",
+        "WebAttack"
+      ],
+      "rare_macro_f1": 0.5800877040149224,
+      "rare_macro_recall": 0.5788171433000078,
+      "macro_pr_auc": 0.7729028753255829,
+      "per_class": {
+        "Benign": {
+          "precision": 0.9990275299260121,
+          "recall": 0.9990876278323642,
+          "f1": 0.9990575779753967,
+          "support": 99740,
+          "prevalence": 0.8229644542724183,
+          "pr_auc": 0.999961820268223
+        },
+        "Botnet": {
+          "precision": 0.9120603015075377,
+          "recall": 0.928388746803069,
+          "f1": 0.9201520912547528,
+          "support": 391,
+          "prevalence": 0.003226179081817882,
+          "pr_auc": 0.8754667025528141
+        },
+        "BruteForce": {
+          "precision": 1.0,
+          "recall": 0.996,
+          "f1": 0.9979959919839679,
+          "support": 1000,
+          "prevalence": 0.008251097395953661,
+          "pr_auc": 0.9990063865016201
+        },
+        "DDoS": {
+          "precision": 1.0,
+          "recall": 0.9980295566502463,
+          "f1": 0.9990138067061144,
+          "support": 6090,
+          "prevalence": 0.0502491831413578,
+          "pr_auc": 0.999853980757558
+        },
+        "DoS": {
+          "precision": 0.9976099945681695,
+          "recall": 0.9963111641531952,
+          "f1": 0.996960156334817,
+          "support": 9217,
+          "prevalence": 0.0760503646985049,
+          "pr_auc": 0.9999635172202872
+        },
+        "Exploit": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2,
+          "prevalence": 1.6502194791907324e-05,
+          "pr_auc": 0.008840932822833275
+        },
+        "Infiltration": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 7,
+          "prevalence": 5.775768177167563e-05,
+          "pr_auc": 0.08213777328639345
+        },
+        "PortScan": {
+          "precision": 0.9903559127439725,
+          "recall": 0.9983796296296297,
+          "f1": 0.9943515850144092,
+          "support": 4320,
+          "prevalence": 0.03564474075051982,
+          "pr_auc": 0.9972822085308736
+        },
+        "WebAttack": {
+          "precision": 0.9952153110047847,
+          "recall": 0.9696969696969697,
+          "f1": 0.9822904368358913,
+          "support": 429,
+          "prevalence": 0.003539720782864121,
+          "pr_auc": 0.993612555989642
+        }
+      },
+      "detection_rate": 0.995479120059657,
+      "false_alarm_rate": 0.0009123721676358532,
+      "alert_precision": 0.9957575757575757,
+      "alerts": 21450
+    },
+    "classifier": {
+      "n": 121196,
+      "accuracy": 0.9988448463645665,
+      "macro_f1": 0.9730535611378737,
+      "supported_macro_f1": 0.9891641024153612,
+      "supported_classes": [
+        "Benign",
+        "Botnet",
+        "BruteForce",
+        "DDoS",
+        "DoS",
+        "PortScan",
+        "WebAttack"
+      ],
+      "tiny_classes": {
+        "Exploit": {
+          "support": 2,
+          "found": 2
+        },
+        "Infiltration": {
+          "support": 7,
+          "found": 5
+        }
+      },
+      "macro_recall": 0.9649426411080877,
+      "weighted_f1": 0.9988532779197355,
+      "mcc": 0.9963182117138343,
+      "attack_macro_f1": 0.9697667491287969,
+      "rare_classes": [
+        "Botnet",
+        "BruteForce",
+        "Exploit",
+        "Infiltration",
+        "WebAttack"
+      ],
+      "rare_macro_f1": 0.9532436284539468,
+      "rare_macro_recall": 0.9378139042543134,
+      "macro_pr_auc": 0.9737559707214959,
+      "per_class": {
+        "Benign": {
+          "precision": 0.9997290897415315,
+          "recall": 0.9989673150190496,
+          "f1": 0.9993480572104873,
+          "support": 99740,
+          "prevalence": 0.8229644542724183,
+          "pr_auc": 0.9999921051633631
+        },
+        "Botnet": {
+          "precision": 0.9,
+          "recall": 0.989769820971867,
+          "f1": 0.9427527405602923,
+          "support": 391,
+          "prevalence": 0.003226179081817882,
+          "pr_auc": 0.976370465554764
+        },
+        "BruteForce": {
+          "precision": 1.0,
+          "recall": 0.999,
+          "f1": 0.9994997498749375,
+          "support": 1000,
+          "prevalence": 0.008251097395953661,
+          "pr_auc": 0.9990192644820745
+        },
+        "DDoS": {
+          "precision": 1.0,
+          "recall": 0.9990147783251232,
+          "f1": 0.9995071463775259,
+          "support": 6090,
+          "prevalence": 0.0502491831413578,
+          "pr_auc": 0.9999955551775151
+        },
+        "DoS": {
+          "precision": 0.9972911474699317,
+          "recall": 0.998589562764457,
+          "f1": 0.9979399327767537,
+          "support": 9217,
+          "prevalence": 0.0760503646985049,
+          "pr_auc": 0.9999778514006914
+        },
+        "Exploit": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2,
+          "prevalence": 1.6502194791907324e-05,
+          "pr_auc": 1.0
+        },
+        "Infiltration": {
+          "precision": 1.0,
+          "recall": 0.7142857142857143,
+          "f1": 0.8333333333333334,
+          "support": 7,
+          "prevalence": 5.775768177167563e-05,
+          "pr_auc": 0.7928571428571427
+        },
+        "PortScan": {
+          "precision": 0.9901330885727397,
+          "recall": 0.9988425925925926,
+          "f1": 0.9944687716063609,
+          "support": 4320,
+          "prevalence": 0.03564474075051982,
+          "pr_auc": 0.9977627257028785
+        },
+        "WebAttack": {
+          "precision": 0.9952941176470588,
+          "recall": 0.986013986013986,
+          "f1": 0.990632318501171,
+          "support": 429,
+          "prevalence": 0.003539720782864121,
+          "pr_auc": 0.9978286261550343
+        }
+      },
+      "detection_rate": 0.9987416107382551,
+      "false_alarm_rate": 0.0010326849809504713,
+      "alert_precision": 0.995216422069478,
+      "alerts": 21532
+    },
+    "hybrid": {
+      "n": 121196,
+      "accuracy": 0.990024423248292,
+      "macro_f1": 0.9724542961866871,
+      "supported_macro_f1": 0.988393618906693,
+      "supported_classes": [
+        "Benign",
+        "Botnet",
+        "BruteForce",
+        "DDoS",
+        "DoS",
+        "PortScan",
+        "WebAttack"
+      ],
+      "tiny_classes": {
+        "Exploit": {
+          "support": 2,
+          "found": 2
+        },
+        "Infiltration": {
+          "support": 7,
+          "found": 5
+        }
+      },
+      "macro_recall": 0.9637517670577793,
+      "weighted_f1": 0.9944147141380764,
+      "mcc": 0.9694359293657243,
+      "attack_macro_f1": 0.9697667491287969,
+      "rare_classes": [
+        "Botnet",
+        "BruteForce",
+        "Exploit",
+        "Infiltration",
+        "WebAttack"
+      ],
+      "rare_macro_f1": 0.9532436284539468,
+      "rare_macro_recall": 0.9378139042543134,
+      "macro_pr_auc": 0.9737559707214959,
+      "per_class": {
+        "Benign": {
+          "precision": 0.9997261524418074,
+          "recall": 0.9882494485662723,
+          "f1": 0.9939546726498096,
+          "support": 99740,
+          "prevalence": 0.8229644542724183,
+          "pr_auc": 0.9999921051633631
+        },
+        "Botnet": {
+          "precision": 0.9,
+          "recall": 0.989769820971867,
+          "f1": 0.9427527405602923,
+          "support": 391,
+          "prevalence": 0.003226179081817882,
+          "pr_auc": 0.976370465554764
+        },
+        "BruteForce": {
+          "precision": 1.0,
+          "recall": 0.999,
+          "f1": 0.9994997498749375,
+          "support": 1000,
+          "prevalence": 0.008251097395953661,
+          "pr_auc": 0.9990192644820745
+        },
+        "DDoS": {
+          "precision": 1.0,
+          "recall": 0.9990147783251232,
+          "f1": 0.9995071463775259,
+          "support": 6090,
+          "prevalence": 0.0502491831413578,
+          "pr_auc": 0.9999955551775151
+        },
+        "DoS": {
+          "precision": 0.9972911474699317,
+          "recall": 0.998589562764457,
+          "f1": 0.9979399327767537,
+          "support": 9217,
+          "prevalence": 0.0760503646985049,
+          "pr_auc": 0.9999778514006914
+        },
+        "Exploit": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2,
+          "prevalence": 1.6502194791907324e-05,
+          "pr_auc": 1.0
+        },
+        "Infiltration": {
+          "precision": 1.0,
+          "recall": 0.7142857142857143,
+          "f1": 0.8333333333333334,
+          "support": 7,
+          "prevalence": 5.775768177167563e-05,
+          "pr_auc": 0.7928571428571427
+        },
+        "PortScan": {
+          "precision": 0.9901330885727397,
+          "recall": 0.9988425925925926,
+          "f1": 0.9944687716063609,
+          "support": 4320,
+          "prevalence": 0.03564474075051982,
+          "pr_auc": 0.9977627257028785
+        },
+        "WebAttack": {
+          "precision": 0.9952941176470588,
+          "recall": 0.986013986013986,
+          "f1": 0.990632318501171,
+          "support": 429,
+          "prevalence": 0.003539720782864121,
+          "pr_auc": 0.9978286261550343
+        }
+      },
+      "detection_rate": 0.9987416107382551,
+      "false_alarm_rate": 0.011750551433727692,
+      "alert_precision": 0.9481438874386089,
+      "alerts": 22601
+    }
+  },
+  "bootstrap": {
+    "n_boot": 1000,
+    "confidence": 0.95,
+    "models": {
+      "baseline": {
+        "macro_f1": {
+          "point": 0.76553573845615,
+          "low": 0.7630559949831518,
+          "high": 0.7681825107463186
+        },
+        "supported_macro_f1": {
+          "point": 0.9842602351579072,
+          "low": 0.9810719935497667,
+          "high": 0.9876632281024096
+        },
+        "rare_macro_f1": {
+          "point": 0.5800877040149224,
+          "low": 0.5757270440984997,
+          "high": 0.5846621560565718
+        },
+        "macro_recall": {
+          "point": 0.765099299418386,
+          "low": 0.7615778980043634,
+          "high": 0.768342227374232
+        },
+        "detection_rate": {
+          "point": 0.995479120059657,
+          "low": 0.9946401938851603,
+          "high": 0.9963180462341537
+        },
+        "false_alarm_rate": {
+          "point": 0.0009123721676358532,
+          "low": 0.0007118508121114899,
+          "high": 0.0010930920393021856
+        }
+      },
+      "classifier": {
+        "macro_f1": {
+          "point": 0.9730535611378736,
+          "low": 0.9452038166416391,
+          "high": 0.9920591014464499
+        },
+        "supported_macro_f1": {
+          "point": 0.9891641024153612,
+          "low": 0.9864327246451386,
+          "high": 0.9916843013187795
+        },
+        "rare_macro_f1": {
+          "point": 0.9532436284539468,
+          "low": 0.9032424417648736,
+          "high": 0.9876910878964235
+        },
+        "macro_recall": {
+          "point": 0.9649426411080877,
+          "low": 0.9310719503634212,
+          "high": 0.9973535367662834
+        },
+        "detection_rate": {
+          "point": 0.9987416107382551,
+          "low": 0.9982289336316182,
+          "high": 0.9991610738255033
+        },
+        "false_alarm_rate": {
+          "point": 0.0010326849809504713,
+          "low": 0.0008421896932023261,
+          "high": 0.0012134048526168035
+        }
+      },
+      "hybrid": {
+        "macro_f1": {
+          "point": 0.9724542961866871,
+          "low": 0.9446073424834259,
+          "high": 0.9914466633922072
+        },
+        "supported_macro_f1": {
+          "point": 0.988393618906693,
+          "low": 0.9856685930177452,
+          "high": 0.9909056617280906
+        },
+        "rare_macro_f1": {
+          "point": 0.9532436284539468,
+          "low": 0.9032424417648736,
+          "high": 0.9876910878964235
+        },
+        "macro_recall": {
+          "point": 0.9637517670577793,
+          "low": 0.9298909909801356,
+          "high": 0.99616479094908
+        },
+        "detection_rate": {
+          "point": 0.9987416107382551,
+          "low": 0.9982289336316182,
+          "high": 0.9991610738255033
+        },
+        "false_alarm_rate": {
+          "point": 0.011750551433727692,
+          "low": 0.011068778824944857,
+          "high": 0.012472678965309805
+        }
+      }
+    },
+    "pairs": {
+      "baseline->classifier": {
+        "macro_f1": {
+          "delta": 0.20751782268172358,
+          "low": 0.17972102416255123,
+          "high": 0.22666973241206365,
+          "p_not_better": 0.0
+        },
+        "supported_macro_f1": {
+          "delta": 0.004903867257454064,
+          "low": 0.0026518549633229417,
+          "high": 0.007199543123296082,
+          "p_not_better": 0.0
+        },
+        "rare_macro_f1": {
+          "delta": 0.37315592443902446,
+          "low": 0.3231231010738847,
+          "high": 0.4076229504477755,
+          "p_not_better": 0.0
+        },
+        "macro_recall": {
+          "delta": 0.19984334168970175,
+          "low": 0.16465549299951832,
+          "high": 0.23268783637099644,
+          "p_not_better": 0.0
+        },
+        "detection_rate": {
+          "delta": 0.0032624906785980734,
+          "low": 0.002516778523489971,
+          "high": 0.004008202833706176,
+          "p_not_better": 0.0
+        },
+        "false_alarm_rate": {
+          "delta": 0.00012031281331461815,
+          "low": 4.010427110487272e-05,
+          "high": 0.0002105474233005815,
+          "p_not_better": 0.999
+        }
+      },
+      "classifier->hybrid": {
+        "macro_f1": {
+          "delta": -0.0005992649511864512,
+          "low": -0.0006369969901344724,
+          "high": -0.000562650860180619,
+          "p_not_better": 1.0
+        },
+        "supported_macro_f1": {
+          "delta": -0.0007704835086682627,
+          "low": -0.0008189961301729054,
+          "high": -0.0007234082488034422,
+          "p_not_better": 1.0
+        },
+        "rare_macro_f1": {
+          "delta": 0.0,
+          "low": 0.0,
+          "high": 0.0,
+          "p_not_better": 1.0
+        },
+        "macro_recall": {
+          "delta": -0.001190874050308377,
+          "low": -0.0012655125548647395,
+          "high": -0.0011184357106255288,
+          "p_not_better": 1.0
+        },
+        "detection_rate": {
+          "delta": 0.0,
+          "low": 0.0,
+          "high": 0.0,
+          "p_not_better": 1.0
+        },
+        "false_alarm_rate": {
+          "delta": 0.010717866452777221,
+          "low": 0.010065921395628634,
+          "high": 0.011389612993783837,
+          "p_not_better": 1.0
+        }
+      }
+    }
+  },
+  "conformal": {
+    "per_class": {
+      "Benign": {
+        "flows": 99740,
+        "coverage": 0.9989673150190496,
+        "mean_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "alerted": 0.0010326849809504713
+      },
+      "Botnet": {
+        "flows": 391,
+        "coverage": 0.989769820971867,
+        "mean_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "alerted": 0.989769820971867
+      },
+      "BruteForce": {
+        "flows": 1000,
+        "coverage": 0.999,
+        "mean_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "alerted": 1.0
+      },
+      "DDoS": {
+        "flows": 6090,
+        "coverage": 0.9990147783251232,
+        "mean_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "alerted": 0.9995073891625615
+      },
+      "DoS": {
+        "flows": 9217,
+        "coverage": 0.998589562764457,
+        "mean_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "alerted": 0.9988065531083867
+      },
+      "Exploit": {
+        "flows": 2,
+        "coverage": 1.0,
+        "mean_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "alerted": 1.0
+      },
+      "Infiltration": {
+        "flows": 7,
+        "coverage": 0.7142857142857143,
+        "mean_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "alerted": 0.7142857142857143
+      },
+      "PortScan": {
+        "flows": 4320,
+        "coverage": 0.9988425925925926,
+        "mean_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "alerted": 0.999537037037037
+      },
+      "WebAttack": {
+        "flows": 429,
+        "coverage": 0.986013986013986,
+        "mean_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "alerted": 0.9883449883449883
+      }
+    },
+    "mean_set_size": 1.0,
+    "singleton_rate": 1.0,
+    "guaranteed_alerting_false_alarm_rate": 0.0010326849809504713,
+    "guaranteed_alerting_detection_rate": 0.9987416107382551,
+    "alpha": 0.1,
+    "target_coverage": 0.9,
+    "thresholds": {
+      "Benign": 0.0004,
+      "Botnet": 0.16,
+      "BruteForce": 0.0009,
+      "DDoS": 0.0009,
+      "DoS": 0.0078,
+      "Exploit": 1.0,
+      "Infiltration": 1.0,
+      "PortScan": 0.0511,
+      "WebAttack": 0.0246
+    },
+    "calibration_flows": {
+      "Benign": 49870,
+      "Botnet": 195,
+      "BruteForce": 500,
+      "DDoS": 3045,
+      "DoS": 4609,
+      "Exploit": 1,
+      "Infiltration": 4,
+      "PortScan": 2160,
+      "WebAttack": 214
+    },
+    "guaranteed": {
+      "Benign": true,
+      "Botnet": true,
+      "BruteForce": true,
+      "DDoS": true,
+      "DoS": true,
+      "Exploit": false,
+      "Infiltration": false,
+      "PortScan": true,
+      "WebAttack": true
+    },
+    "expected_coverage_range": {
+      "Benign": [
+        0.8973539391528494,
+        0.9026196840240233
+      ],
+      "Botnet": [
+        0.8580388771944318,
+        0.9403122591775877
+      ],
+      "BruteForce": [
+        0.8725114573141097,
+        0.9248641849335745
+      ],
+      "DDoS": [
+        0.8893083373949484,
+        0.9105879316872677
+      ],
+      "DoS": [
+        0.8911781369625631,
+        0.9084931654984205
+      ],
+      "Exploit": [
+        1.0,
+        1.0
+      ],
+      "Infiltration": [
+        1.0,
+        1.0
+      ],
+      "PortScan": [
+        0.8870574931837789,
+        0.9123338528987848
+      ],
+      "WebAttack": [
+        0.8593540637761609,
+        0.9382236464998832
+      ]
+    }
+  },
+  "feature_importance": {
+    "destination_port": {
+      "importance": 0.40326,
+      "std": 0.03029
+    },
+    "init_win_bytes_forward": {
+      "importance": 0.1999,
+      "std": 0.01317
+    },
+    "bwd_packet_length_max": {
+      "importance": 0.11227,
+      "std": 0.00093
+    },
+    "act_data_pkt_fwd": {
+      "importance": 0.07715,
+      "std": 0.05214
+    },
+    "total_backward_packets": {
+      "importance": 0.07522,
+      "std": 0.05158
+    },
+    "subflow_fwd_packets": {
+      "importance": 0.07522,
+      "std": 0.05158
+    },
+    "subflow_bwd_packets": {
+      "importance": 0.07484,
+      "std": 0.05212
+    },
+    "total_fwd_packets": {
+      "importance": 0.07409,
+      "std": 0.05239
+    },
+    "init_win_bytes_backward": {
+      "importance": 0.05929,
+      "std": 0.00749
+    },
+    "fwd_header_length": {
+      "importance": 0.04031,
+      "std": 0.05376
+    },
+    "protocol": {
+      "importance": 0.03935,
+      "std": 0.05156
+    },
+    "bwd_header_length": {
+      "importance": 0.03791,
+      "std": 0.05149
+    },
+    "min_seg_size_forward": {
+      "importance": 0.0293,
+      "std": 0.00322
+    },
+    "psh_flag_count": {
+      "importance": 0.01961,
+      "std": 0.00266
+    },
+    "fwd_iat_min": {
+      "importance": 0.01923,
+      "std": 0.00268
+    },
+    "urg_flag_count": {
+      "importance": 0.01548,
+      "std": 0.00074
+    },
+    "bwd_packet_length_mean": {
+      "importance": 0.01327,
+      "std": 0.00695
+    },
+    "avg_bwd_segment_size": {
+      "importance": 0.01211,
+      "std": 0.00695
+    },
+    "flow_iat_min": {
+      "importance": 0.00435,
+      "std": 0.00018
+    },
+    "flow_duration": {
+      "importance": 0.0041,
+      "std": 0.00047
+    }
+  },
+  "alerts": {
+    "total": 22601,
+    "by_priority": {
+      "P1": 16066,
+      "P2": 1103,
+      "P3": 1076,
+      "P4": 4356
+    },
+    "by_class": {
+      "DoS": 9229,
+      "DDoS": 6084,
+      "PortScan": 4358,
+      "Unknown-Anomaly": 1069,
+      "BruteForce": 999,
+      "Botnet": 430,
+      "WebAttack": 425,
+      "Infiltration": 5,
+      "Exploit": 2
+    },
+    "needs_review": 1099,
+    "unknown_anomaly": 1069,
+    "incidents": 483,
+    "incidents_by_priority": {
+      "P1": 25,
+      "P2": 21,
+      "P3": 436,
+      "P4": 1
+    },
+    "largest_incidents": [
+      {
+        "incident_id": "INC-00001",
+        "priority": "P1",
+        "predicted_class": "DoS",
+        "flows": 9204,
+        "shared_endpoint": "172.16.0.1"
+      },
+      {
+        "incident_id": "INC-00002",
+        "priority": "P1",
+        "predicted_class": "DDoS",
+        "flows": 6084,
+        "shared_endpoint": "172.16.0.1"
+      },
+      {
+        "incident_id": "INC-00003",
+        "priority": "P1",
+        "predicted_class": "Botnet",
+        "flows": 269,
+        "shared_endpoint": "205.174.165.73"
+      },
+      {
+        "incident_id": "INC-00004",
+        "priority": "P1",
+        "predicted_class": "Botnet",
+        "flows": 41,
+        "shared_endpoint": "192.168.10.15"
+      },
+      {
+        "incident_id": "INC-00005",
+        "priority": "P1",
+        "predicted_class": "Botnet",
+        "flows": 36,
+        "shared_endpoint": "192.168.10.14"
+      }
+    ]
+  },
+  "artifacts": {
+    "model": "artifacts\\cicids2017\\netsentinel_model.joblib",
+    "alerts": "artifacts\\cicids2017\\alerts_test.csv"
+  }
+}

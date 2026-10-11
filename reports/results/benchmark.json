@@ -34,7 +34,8 @@
   "best": {
     "model": "ensemble",
     "strategy": "hybrid",
-    "macro_f1": 0.8276565370244731
+    "macro_f1": 0.8276565370244731,
+    "selection_score": 0.8276565370244732
   },
   "rows": [
     {
@@ -71,7 +72,8 @@
         "Infiltration": 0.058823529411764705,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.2463768115942029
-      }
+      },
+      "selection_score": 0.7840097211139284
     },
     {
       "model": "logreg",
@@ -107,7 +109,8 @@
         "Infiltration": 0.7647058823529411,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.8840579710144928
-      }
+      },
+      "selection_score": 0.5944314329772973
     },
     {
       "model": "logreg",
@@ -143,7 +146,8 @@
         "Infiltration": 0.4117647058823529,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.7681159420289855
-      }
+      },
+      "selection_score": 0.740822604861541
     },
     {
       "model": "logreg",
@@ -179,7 +183,8 @@
         "Infiltration": 0.5294117647058824,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.7681159420289855
-      }
+      },
+      "selection_score": 0.7420570280436809
     },
     {
       "model": "random_forest",
@@ -215,7 +220,8 @@
         "Infiltration": 0.11764705882352941,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.057971014492753624
-      }
+      },
+      "selection_score": 0.7522414693370847
     },
     {
       "model": "random_forest",
@@ -251,7 +257,8 @@
         "Infiltration": 0.0,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.08695652173913043
-      }
+      },
+      "selection_score": 0.7492852614925651
     },
     {
       "model": "random_forest",
@@ -287,7 +294,8 @@
         "Infiltration": 0.11764705882352941,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.34782608695652173
-      }
+      },
+      "selection_score": 0.7909701932525508
     },
     {
       "model": "random_forest",
@@ -323,7 +331,8 @@
         "Infiltration": 0.17647058823529413,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.4782608695652174
-      }
+      },
+      "selection_score": 0.7955093162805074
     },
     {
       "model": "hist_gb",
@@ -359,7 +368,8 @@
         "Infiltration": 0.058823529411764705,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.34782608695652173
-      }
+      },
+      "selection_score": 0.7565970155217296
     },
     {
       "model": "hist_gb",
@@ -395,7 +405,8 @@
         "Infiltration": 0.47058823529411764,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.855072463768116
-      }
+      },
+      "selection_score": 0.7553384141750722
     },
     {
       "model": "hist_gb",
@@ -431,7 +442,8 @@
         "Infiltration": 0.29411764705882354,
         "PortScan": 0.9709821428571429,
         "WebAttack": 0.391304347826087
-      }
+      },
+      "selection_score": 0.8251795556872087
     },
     {
       "model": "hist_gb",
@@ -467,7 +479,8 @@
         "Infiltration": 0.23529411764705882,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.5797101449275363
-      }
+      },
+      "selection_score": 0.8158668108881296
     },
     {
       "model": "deep_mlp",
@@ -503,7 +516,8 @@
         "Infiltration": 0.0,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.21739130434782608
-      }
+      },
+      "selection_score": 0.7767629524056182
     },
     {
       "model": "deep_mlp",
@@ -539,7 +553,8 @@
         "Infiltration": 0.47058823529411764,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.6666666666666666
-      }
+      },
+      "selection_score": 0.7790657279000776
     },
     {
       "model": "deep_mlp",
@@ -575,7 +590,8 @@
         "Infiltration": 0.23529411764705882,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.7246376811594203
-      }
+      },
+      "selection_score": 0.8046842111504039
     },
     {
       "model": "deep_mlp",
@@ -611,7 +627,8 @@
         "Infiltration": 0.23529411764705882,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.8260869565217391
-      }
+      },
+      "selection_score": 0.7880964891758997
     },
     {
       "model": "ensemble",
@@ -647,7 +664,8 @@
         "Infiltration": 0.0,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.2463768115942029
-      }
+      },
+      "selection_score": 0.7776701294220703
     },
     {
       "model": "ensemble",
@@ -683,7 +701,8 @@
         "Infiltration": 0.17647058823529413,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.6811594202898551
-      }
+      },
+      "selection_score": 0.8056577995341466
     },
     {
       "model": "ensemble",
@@ -719,7 +738,8 @@
         "Infiltration": 0.17647058823529413,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.4492753623188406
-      }
+      },
+      "selection_score": 0.8237663885897034
     },
     {
       "model": "ensemble",
@@ -755,7 +775,32 @@
         "Infiltration": 0.23529411764705882,
         "PortScan": 0.9776785714285714,
         "WebAttack": 0.6521739130434783
-      }
+      },
+      "selection_score": 0.8276565370244732
     }
-  ]
+  ],
+  "val_support": {
+    "Benign": 8022,
+    "DoS": 722,
+    "DDoS": 498,
+    "PortScan": 448,
+    "BruteForce": 148,
+    "WebAttack": 69,
+    "Botnet": 62,
+    "Infiltration": 17,
+    "Exfiltration": 14
+  },
+  "min_val_support": 10,
+  "selection_classes": [
+    "Benign",
+    "Botnet",
+    "BruteForce",
+    "DDoS",
+    "DoS",
+    "Exfiltration",
+    "Infiltration",
+    "PortScan",
+    "WebAttack"
+  ],
+  "excluded_from_selection": []
 }

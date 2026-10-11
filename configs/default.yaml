@@ -50,11 +50,21 @@ benchmark:
   models: [logreg, random_forest, hist_gb, deep_mlp, ensemble]
   strategies: [none, class_weight, smote, hybrid]
   selection_metric: macro_f1  # chosen on the validation set; the test set is used once, by `train`
+  min_val_support: 10         # classes with fewer validation flows are reported but do not decide the winner
   max_train_rows: null        # cap training rows during the benchmark (stratified, keeps rare classes)
 
 final_model:
   model: auto                 # auto = best benchmark config, or one of the model names above
   strategy: auto
+
+evaluation:
+  bootstrap: 1000             # stratified bootstrap resamples for 95% confidence intervals
+
+protocols:
+  session_window: 1h          # session-grouped split: flows sharing source, destination and this window stay together
+
+conformal:
+  alpha: 0.1                  # per-family prediction sets contain the true family for >= 90% of flows of EVERY family
 
 explain:
   permutation_rows: 4000      # validation rows used for permutation feature importance
@@ -81,7 +91,7 @@ drift:
 feedback:
   # `nids all` closes the loop with a simulated analyst on the test split (the deployed model is not replaced):
   simulated_incidents: 100    # incidents reviewed, roughly one analyst-day
-  review_order: review-first  # review-first: "needs review" incidents first (active learning) | priority
+  review_order: review-first  # review-first: needs-review incidents first, then by priority | uncertainty | priority
   weight: 1                   # copies of each analyst-labelled flow in retraining (raise to trust analysts more)
 
 triage:

@@ -7,7 +7,8 @@ import pandas as pd
 
 from nids.bundle import ModelBundle
 from nids.cli import main
-from nids.experiments import run_benchmark, run_drift, run_novelty, run_retrain, run_train
+from nids.experiments import (run_audit, run_benchmark, run_drift, run_novelty, run_protocols, run_retrain,
+                              run_train)
 from nids.feedback import simulate_feedback
 from nids.report import write_report
 
@@ -22,6 +23,18 @@ def test_full_pipeline(small_cfg, synthetic_csv, tmp_path):
     assert m["hybrid"]["detection_rate"] >= m["classifier"]["detection_rate"]  # novelty only adds alerts
     model_file = Path(final["artifacts"]["model"])
     assert model_file.exists() and Path(final["artifacts"]["alerts"]).exists()
+    # uncertainty and per-family guarantees travel with the headline numbers
+    ci = final["bootstrap"]["models"]["classifier"]["macro_f1"]
+    assert ci["low"] <= m["classifier"]["macro_f1"] <= ci["high"]
+    assert "baseline->classifier" in final["bootstrap"]["pairs"]
+    assert final["conformal"]["target_coverage"] == 0.9 and final["conformal"]["mean_set_size"] >= 1
+
+    audit = run_audit(small_cfg)
+    assert audit["shortcut_scan"] and "identifier_suspects" in audit
+    protocols = run_protocols(small_cfg)["protocols"]
+    assert {"random", "session", "temporal"} <= set(protocols)
+    assert "(0 shared)" in protocols["session"]["note"]  # no session spans train and test
+    assert "Exfiltration" in protocols["temporal"]["unseen_in_training"]
 
     nov = run_novelty(small_cfg)
     assert nov["rows"] and all(r["hybrid_detection"] >= r["classifier_detection"] for r in nov["rows"])
@@ -43,7 +56,9 @@ def test_full_pipeline(small_cfg, synthetic_csv, tmp_path):
     assert ModelBundle.load(retrained_path).metadata["feedback_flows"] == len(feedback)
 
     report = write_report(small_cfg).read_text(encoding="utf-8")
-    for heading in ("## 2. Benchmark", "## 3. Final model", "## 6. Novel attacks", "## 7. Drift", "## 8. Closing"):
+    for heading in ("### Data audit", "## 2. Benchmark", "## 3. Final model", "### 3.1 Is the gain real",
+                    "### 3.2 How optimistic", "### 3.3 New: per-family guarantees", "## 6. Novel attacks",
+                    "## 7. Drift", "## 8. Closing"):
         assert heading in report
 
     bundle = ModelBundle.load(model_file)
