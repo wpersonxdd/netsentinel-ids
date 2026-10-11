@@ -47,6 +47,6 @@ that handles highly imbalanced threat data and adapts to evolving attack pattern
 - [x] Repository pushed to GitHub (https://github.com/wpersonxdd/netsentinel-ids)
 - [ ] CI enabled: move `.github/ci.yml` to `.github/workflows/ci.yml` on github.com (see README.ru.md), badge green
 - [ ] Repository made public (or judges invited) at submission time
-- [x] Demo video (`docs/media/NetSentinel_demo.mp4`, 5.4 min, narrated, English captions) linked in README
+- [x] Demo video (`docs/media/NetSentinel_demo.mp4`, ≈ 6 min, animated neon scenes, narrated, English captions) linked in README
 - [x] Slides exported to PDF (`docs/NetSentinel_slides.pdf`) and linked in README
 - [ ] Presentation and video links added to the registration form ("Project presentation link")

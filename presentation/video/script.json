@@ -1,0 +1,136 @@
+{
+  "voice": "Microsoft Zira Desktop",
+  "rate": 1,
+  "lead": 0.9,
+  "gap": 0.35,
+  "tail": 1.3,
+  "scenes": [
+    {
+      "file": "scenes/01_intro.html",
+      "lines": [
+        "Every second, a company network carries thousands of connections.",
+        "Almost all of them are normal. A tiny few are attacks.",
+        "This is NetSentinel, my solution for DataNova problem DN-CY-01: a system that finds those few, including attacks it has never seen before."
+      ]
+    },
+    {
+      "file": "scenes/02_imbalance.html",
+      "lines": [
+        "Think of airport security: thousands of ordinary passengers, and only now and then someone dangerous.",
+        "In the real traffic I used, the rarest attack is one connection in forty-five thousand.",
+        "A lazy guard who waves everyone through is right almost all the time, and completely useless.",
+        "A model trained the naive way becomes that lazy guard: it looks accurate, and catches nothing."
+      ]
+    },
+    {
+      "file": "scenes/03_challenges.html",
+      "lines": [
+        "So NetSentinel has to solve four problems at once.",
+        "Attacks are rare, so training is rebalanced: the model sees rare attacks more often.",
+        "New attacks appear, so a second detector learns only what normal traffic looks like, and flags anything unfamiliar.",
+        "Tactics change, so a drift monitor watches the traffic and asks for retraining.",
+        "And analysts drown in alerts, so alerts become explained incidents, and every analyst decision teaches the model."
+      ]
+    },
+    {
+      "file": "scenes/04_pipeline.html",
+      "lines": [
+        "Here is how it works.",
+        "Network flow records come in, one row per connection, and are cleaned and checked for leaks.",
+        "Two detectors look at every flow: a rebalanced ensemble for known attacks, and a novelty detector for the unknown.",
+        "Their alerts become incidents, each with a priority, a reason, and a first response.",
+        "The analyst confirms or rejects them, and the model retrains on those decisions. One command runs the whole loop."
+      ]
+    },
+    {
+      "file": "scenes/05_data.html",
+      "lines": [
+        "To prove it on real traffic, I used CIC-IDS2017 from the Canadian Institute for Cybersecurity.",
+        "Five working days of a real network: 2.8 million flows, with attacks staged on different days.",
+        "Nine attack families, and forty-five thousand to one between the biggest and the smallest.",
+        "The raw files are messy, so the pipeline repairs them automatically: a twelve-hour clock with no A M or P M, almost three hundred thousand empty rows, and three hundred thousand duplicates."
+      ]
+    },
+    {
+      "file": "scenes/06_results.html",
+      "lines": [
+        "On 121 thousand test flows the system had never seen,",
+        "99.9 percent of attack flows raise an alert,",
+        "and only one normal flow in a thousand raises a false alarm.",
+        "Macro F1, which weights every attack family equally, rises from 0.77 to 0.97 with rebalancing.",
+        "But to be honest: most of that jump comes from just nine flows of the two rarest families. On the others, the gain is small, but statistically real."
+      ]
+    },
+    {
+      "file": "scenes/07_yesterday.html",
+      "lines": [
+        "Now the most important result.",
+        "Shuffle the data randomly, and the score is 0.97.",
+        "Keep each attack session on one side, and it drops to 0.89.",
+        "Train on the past and test on the future, and it collapses to 0.18.",
+        "Every attack in this dataset happens on a single day, so a model trained on Monday to Thursday has never seen Friday's attacks. A supervised detector only knows yesterday's attacks."
+      ]
+    },
+    {
+      "file": "scenes/08_novelty.html",
+      "lines": [
+        "That is why NetSentinel has a second detector.",
+        "It learns only what normal traffic looks like, and flags flows that look like nothing it knows.",
+        "To test it, I hide one attack family from training at a time.",
+        "Web attacks go from 3 to 87 percent caught, denial of service from 3 to 71 percent, and on average from 5 to 33 percent, for about one percent more false alarms.",
+        "Port scans and botnets still look normal at flow level. That is a real limit, and I report it."
+      ]
+    },
+    {
+      "file": "scenes/09_drift.html",
+      "lines": [
+        "Attackers also change tactics over time.",
+        "Trained on the first days, the model scores 0.998 on them, but only 0.18 on the days that follow.",
+        "The drift monitor notices this without any labels: the alerted traffic shifts, and unknown anomalies rise from 0.9 to 5.4 percent.",
+        "After retraining on just ten percent of the new flows, the score recovers to 0.93."
+      ]
+    },
+    {
+      "file": "scenes/10_console.html",
+      "lines": [
+        "Detection is only useful if a person can act on it.",
+        "On the test traffic, the models raised 22,601 flow alerts.",
+        "The console groups them into 483 incidents, by attack family, shared endpoint and time: forty-seven times fewer things to open.",
+        "Here it scores five thousand new flows: 952 alerts become 60 incidents, fourteen of them top priority."
+      ]
+    },
+    {
+      "file": "scenes/11_incident.html",
+      "lines": [
+        "Opening an incident shows why it was raised: the features furthest from normal traffic.",
+        "It shows how sure the model is, as a set of possible families with a ninety percent guarantee for each family.",
+        "It suggests a first response.",
+        "And one analyst decision labels the whole incident, so the model can retrain on it."
+      ]
+    },
+    {
+      "file": "scenes/12_trust.html",
+      "lines": [
+        "Every number in this project can be checked.",
+        "Each headline result has a confidence interval.",
+        "The same model is tested three ways: random, by session, and over time.",
+        "An automatic audit looks for shortcuts and leaks before training, and eighty-one automated tests guard the code."
+      ]
+    },
+    {
+      "file": "scenes/13_limits.html",
+      "lines": [
+        "NetSentinel has clear limits.",
+        "Port scans and botnets look normal at flow level, the novelty detector costs about one percent extra false alarms, and the data is from 2017.",
+        "Next, I would pair it with payload inspection such as Zeek or Suricata, tune the alert budget to the size of the team, and run it on the official DataNova data with a single command."
+      ]
+    },
+    {
+      "file": "scenes/14_outro.html",
+      "lines": [
+        "NetSentinel finds rare attacks, flags new ones, and keeps analysts in the loop, with honest numbers on real traffic.",
+        "The code, the report and this video are on GitHub. Thank you."
+      ]
+    }
+  ]
+}

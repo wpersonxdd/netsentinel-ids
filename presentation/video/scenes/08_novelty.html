@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Unseen attacks</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="../neon.css">
+<style>
+  .radar { position: absolute; left: 150px; top: 330px; width: 540px; height: 540px; border-radius: 50%; overflow: hidden;
+    border: 3px solid var(--cyan); box-shadow: 0 0 24px rgba(59, 240, 255, .6), 0 0 0 1px var(--cyan) inset; background: rgba(4, 18, 44, .85); }
+  .radar .r { position: absolute; border: 1.5px solid rgba(59, 240, 255, .25); border-radius: 50%; }
+  .radar .x { position: absolute; background: rgba(59, 240, 255, .18); }
+  .sweep { position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(59, 240, 255, 0) 0deg, rgba(59, 240, 255, 0) 290deg, rgba(59, 240, 255, .45) 360deg); }
+  .blip { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+  .row { display: flex; align-items: center; gap: 20px; height: 66px; }
+  .row .name { width: 230px; font-size: 28px; }
+  .row .track { position: relative; width: 470px; height: 30px; border-radius: 8px; background: rgba(120, 160, 255, .08); }
+  .row .b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 8px; }
+  .row .num { font-family: 'JetBrains Mono', monospace; font-size: 28px; white-space: nowrap; }
+</style></head>
+<body>
+<div class="stage">
+  <div class="hd">
+    <p class="kicker fade-up" style="--off:.15s">07 · UNSEEN ATTACKS</p>
+    <h1 class="fade-up" style="--off:.3s">Catching attacks it has <span class="mag glow">never seen</span></h1>
+  </div>
+
+  <div class="radar zoom-in" style="--at:var(--c0)">
+    <div class="r" style="inset:90px"></div><div class="r" style="inset:180px"></div><div class="r" style="inset:240px"></div>
+    <div class="x" style="left:0;right:0;top:269px;height:1.5px"></div><div class="x" style="top:0;bottom:0;left:269px;width:1.5px"></div>
+    <div class="sweep spin"></div>
+    <div id="blips"></div>
+    <div class="abs pop" style="--at:var(--c1);left:405px;top:120px;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:var(--mag);box-shadow:0 0 14px var(--mag),0 0 40px var(--mag)"></div>
+    <div class="ring mag" style="--at:var(--c1);left:355px;top:70px;width:100px;height:100px"></div>
+    <div class="ring mag" style="--at:var(--c1);--off:.7s;left:355px;top:70px;width:100px;height:100px"></div>
+  </div>
+  <p class="abs label fade-up" style="--at:var(--c0);--off:.8s;left:150px;top:276px;width:540px;text-align:center"><span class="cyan">●</span> normal traffic, as the detector learned it</p>
+  <div class="abs exit" style="--out:var(--c2);left:0;top:0"><p class="abs chip mag fade-up" style="--at:var(--c1);--off:.6s;left:600px;top:380px;white-space:nowrap">unlike anything normal <span>→ Unknown-Anomaly</span></p></div>
+
+  <div class="abs" style="left:800px;top:300px;width:1000px">
+    <p class="chip vio fade-up" style="--at:var(--c2)"><i data-icon="ghost" style="width:34px;height:34px"></i><span>hide one attack family from training, then test on it</span></p>
+    <div class="fade-up" style="--at:var(--c3);margin-top:30px">
+      <div class="row" style="height:40px"><p class="name"></p><p class="label" style="width:470px"><span class="muted">▬ classifier alone</span> &nbsp; <span class="cyan">▬ + novelty detector</span></p></div>
+      <div id="rows"></div>
+    </div>
+  </div>
+</div>
+<script src="../neon.js"></script>
+<script>
+  let b = '';
+  for (let i = 0; i < 46; i++) {
+    const a = rnd() * Math.PI * 2, r = Math.pow(rnd(), .7) * 105;
+    b += `<i class="blip pop" style="--at:var(--c0);--off:${(0.6 + i * 0.03).toFixed(2)}s;left:${(270 + Math.cos(a) * r).toFixed(0)}px;top:${(270 + Math.sin(a) * r * .8).toFixed(0)}px"></i>`;
+  }
+  document.getElementById('blips').innerHTML = b;
+  const data = [['Web attacks', 3, 87], ['DoS', 3, 71], ['DDoS', 24, 40], ['Average', 5, 33]];
+  let h = '';
+  data.forEach(([name, before, after], i) => {
+    const off = (0.3 + i * 1.1).toFixed(1), bold = name === 'Average';
+    h += `<div class="row fade-up" style="--at:var(--c3);--off:${off}s"><p class="name"${bold ? ' style="font-weight:600;color:var(--cyan)"' : ''}>${name}</p>
+      <div class="track"><b class="b grow-x" style="--at:var(--c3);--off:${off}s;width:${after}%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)"></b>
+      <b class="b" style="width:${before}%;background:#7F8DAA"></b></div>
+      <p class="num"><span class="muted">${before}%</span> → <span class="cyan glow">${after}%</span></p></div>`;
+  });
+  h += `<div class="row fade-up" style="--at:var(--c3);--off:5.2s"><p class="name"></p><p class="label">for about <b class="amber">+1% false alarms</b></p></div>`;
+  document.getElementById('rows').innerHTML = h;
+  // the limit: families that stay invisible
+  const lim = document.createElement('div');
+  lim.className = 'abs card lit amber fade-up';
+  lim.style.cssText = '--at:var(--c4);left:800px;top:790px;width:1000px;height:130px;display:flex;align-items:center;gap:26px;padding:0 30px';
+  lim.innerHTML = `<div class="neon" style="width:76px;height:76px;flex:none">${iconSVG('warning')}</div>
+    <p style="font-size:28px;line-height:1.3;color:var(--text)"><b class="amber">Port scans · brute force · botnet: 0–3%</b><br>they look normal at flow level, a limit I report</p>`;
+  document.querySelector('.stage').appendChild(lim);
+</script>
+</body></html>

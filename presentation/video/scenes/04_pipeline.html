@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Pipeline</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="../neon.css">
+<style>
+  .node { position: absolute; width: 170px; height: 170px; margin: -85px 0 0 -85px; border-radius: 50%; border: 3px solid currentColor;
+    background: rgba(6, 16, 44, .9); box-shadow: 0 0 20px currentColor, 0 0 0 1px currentColor inset; display: grid; place-items: center; }
+  .node .ic { width: 92px; height: 92px; filter: drop-shadow(0 0 6px currentColor); }
+  .cap2 { position: absolute; width: 300px; margin-left: -150px; text-align: center; font-size: 26px; line-height: 1.3; }
+  .cap2 b { display: block; font-family: 'Space Grotesk', Arial, sans-serif; font-size: 30px; color: var(--text); }
+  .cap2 span { color: var(--muted); font-size: 23px; }
+  #links path { fill: none; stroke-width: 3; }
+  .term { font-family: 'JetBrains Mono', monospace; font-size: 30px; padding: 16px 28px; border-radius: 14px; border: 2px solid var(--lime);
+    background: rgba(3, 10, 28, .9); box-shadow: 0 0 18px -2px var(--lime); color: var(--lime); min-width: 520px; }
+</style></head>
+<body>
+<div class="stage">
+  <div class="hd">
+    <p class="kicker fade-up" style="--off:.15s">03 · HOW IT WORKS</p>
+    <h1 class="fade-up" style="--off:.3s">From raw traffic to an analyst’s decision</h1>
+  </div>
+
+  <svg id="links" class="abs" width="1920" height="1080" style="left:0;top:0">
+    <path pathLength="1" class="draw" style="--at:var(--c1);--off:.5s;stroke:var(--cyan)" d="M318 610 L472 610"/>
+    <path pathLength="1" class="draw" style="--at:var(--c2);stroke:var(--cyan)" d="M648 610 C730 610 740 470 812 470"/>
+    <path pathLength="1" class="draw" style="--at:var(--c2);stroke:var(--mag)" d="M648 610 C730 610 740 750 812 750"/>
+    <path pathLength="1" class="draw" style="--at:var(--c3);stroke:var(--cyan)" d="M988 470 C1080 470 1100 610 1182 610"/>
+    <path pathLength="1" class="draw" style="--at:var(--c3);stroke:var(--mag)" d="M988 750 C1080 750 1100 610 1182 610"/>
+    <path pathLength="1" class="draw" style="--at:var(--c4);stroke:var(--amber)" d="M1358 610 L1542 610"/>
+    <path pathLength="1" class="draw" style="--at:var(--c4);--off:1.2s;stroke:var(--lime);stroke-dasharray:1;filter:drop-shadow(0 0 6px var(--lime))" d="M1630 520 C1630 300 1150 300 962 408"/>
+  </svg>
+  <div id="pk" class="abs" style="left:0;top:0;width:1920px;height:1080px"></div>
+
+  <div class="node cyan pop" style="--at:var(--c1);left:230px;top:610px"><i data-icon="database"></i></div>
+  <p class="cap2 fade-up" style="--at:var(--c1);--off:.2s;left:230px;top:712px"><b>Flow records</b><span>one row per connection</span></p>
+  <div class="node cyan pop" style="--at:var(--c1);--off:.8s;left:560px;top:610px"><i data-icon="funnel"></i></div>
+  <p class="cap2 fade-up" style="--at:var(--c1);--off:1s;left:560px;top:712px"><b>Clean &amp; audit</b><span>duplicates and leaks removed</span></p>
+
+  <div class="node cyan pop" style="--at:var(--c2);--off:.6s;left:900px;top:470px"><i data-icon="neural"></i></div>
+  <div class="node mag pop" style="--at:var(--c2);--off:.9s;left:900px;top:750px"><i data-icon="radar"></i></div>
+  <p class="cap2 fade-up" style="--at:var(--c2);--off:1.1s;left:900px;top:852px"><b class="mag">Unknown attacks</b><span>novelty detector</span></p>
+  <p class="cap2 fade-up" style="--at:var(--c2);--off:.8s;left:900px;top:296px"><b class="cyan">Known attacks</b><span>rebalanced ensemble</span></p>
+
+  <div class="node amber pop" style="--at:var(--c3);--off:.6s;left:1270px;top:610px"><i data-icon="ticket"></i></div>
+  <p class="cap2 fade-up" style="--at:var(--c3);--off:.8s;left:1270px;top:712px"><b>Incidents</b><span>priority · why · first response</span></p>
+
+  <div class="node lime pop" style="--at:var(--c4);--off:.5s;left:1630px;top:610px"><i data-icon="person"></i></div>
+  <p class="cap2 fade-up" style="--at:var(--c4);--off:.7s;left:1630px;top:712px"><b>Analyst</b><span>confirms or rejects</span></p>
+  <div class="abs lime neon pop" style="--at:var(--c4);--off:2.1s;left:1110px;top:262px;width:54px;height:54px"><div data-icon="loop" style="width:52px;height:52px"></div></div>
+  <p class="abs chip lime mono fade-up" style="--at:var(--c4);--off:2s;left:1180px;top:264px">retrain on decisions</p>
+
+  <div class="abs fade-up" style="--at:var(--c4);--off:3s;left:1190px;top:880px"><p class="term">$ <span data-type="python -m nids all" data-cue="4" data-off="3.4" data-cps="16"></span><span class="blink">▌</span></p></div>
+</div>
+<script src="../neon.js"></script>
+<script>
+  const pk = document.getElementById('pk');
+  const lines = [
+    ['M318 610 L472 610', 'var(--cyan)', 1, .5 + .8],
+    ['M648 610 C730 610 740 470 812 470', 'var(--cyan)', 2, 1.3],
+    ['M648 610 C730 610 740 750 812 750', 'var(--mag)', 2, 1.3],
+    ['M988 470 C1080 470 1100 610 1182 610', 'var(--cyan)', 3, 1.3],
+    ['M988 750 C1080 750 1100 610 1182 610', 'var(--mag)', 3, 1.3],
+    ['M1358 610 L1542 610', 'var(--amber)', 4, 1.3],
+    ['M1630 520 C1630 300 1150 300 962 408', 'var(--lime)', 4, 2.6],
+  ];
+  let h = '';
+  lines.forEach(([d, color, c, off]) => {
+    for (let k = 0; k < 3; k++) {
+      h += `<div class="fade-in" style="--at:var(--c${c});--off:${off}s"><i class="travel dot" style="color:${color};offset-path:path('${d}');` +
+        `animation-duration:${d.includes('962') ? 3.2 : 1.8}s;animation-delay:-${(k * 0.6).toFixed(2)}s"></i></div>`;
+    }
+  });
+  pk.innerHTML = h;
+  document.querySelectorAll('.node i[data-icon]').forEach(i => { i.style.display = 'contents'; });
+</script>
+</body></html>

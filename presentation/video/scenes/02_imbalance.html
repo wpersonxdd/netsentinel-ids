@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Imbalance</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="../neon.css">
+<style>
+  #field i { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); opacity: .8;
+    box-shadow: 0 0 6px rgba(59, 240, 255, .8); }
+  .meter { position: relative; height: 26px; width: 500px; border-radius: 13px; background: rgba(120, 160, 255, .12); overflow: hidden; }
+  .meter b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 13px; }
+  .stamp { border: 6px solid var(--mag); color: var(--mag); border-radius: 14px; padding: 8px 26px; font-size: 54px; letter-spacing: 3px;
+    transform: rotate(-7deg); box-shadow: 0 0 22px var(--mag), 0 0 22px var(--mag) inset; text-shadow: 0 0 14px var(--mag); }
+</style></head>
+<body>
+<div class="stage">
+  <div class="hd">
+    <p class="kicker fade-up" style="--off:.15s">01 · THE PROBLEM</p>
+    <h1 class="fade-up" style="--off:.3s">Attacks are rare. <span class="mag glow">That breaks naive AI.</span></h1>
+  </div>
+
+  <div id="field" class="abs" style="left:120px;top:330px;width:760px;height:330px"></div>
+  <div class="abs fade-up" style="--at:var(--c0);--off:1.2s;left:120px;top:690px;display:flex;gap:40px;font-size:26px">
+    <span><span class="cyan glow">●</span> normal connection</span>
+    <span class="fade-in" style="--at:var(--c1)"><span class="mag glow">●</span> attack</span>
+  </div>
+  <div class="abs cyan neon pop" style="--at:var(--c1);--off:.3s;left:571px;top:430px;width:150px;height:150px"><div data-icon="magnifier" style="width:150px;height:150px"></div></div>
+
+  <!-- panel A: the ratio -->
+  <div class="abs exit" style="--out:var(--c2);left:1000px;top:330px;width:800px">
+    <div class="fade-up" style="--at:var(--c1);--off:.4s">
+      <p class="label">rarest attack family vs. normal traffic</p>
+      <p class="big mag glow" style="font-size:150px;margin-top:10px">1 : <span data-count="45000" data-cue="1" data-off=".4" data-dur="1.8"></span></p>
+      <p class="label" style="margin-top:18px">real network traffic, CIC-IDS2017</p>
+    </div>
+  </div>
+
+  <!-- panel B: the lazy guard -->
+  <div class="abs" style="left:1000px;top:310px;width:800px">
+    <div class="fade-up" style="--at:var(--c2);--off:.2s;display:flex;align-items:center;gap:34px">
+      <div class="amber neon" style="width:150px;height:150px"><div data-icon="guard" class="draw-all" style="--at:var(--c2);width:150px;height:150px"></div></div>
+      <div>
+        <p class="kicker amber" style="color:var(--amber);text-shadow:0 0 12px rgba(255,193,77,.7)">THE LAZY GUARD</p>
+        <p class="chip amber fade-up" style="--at:var(--c2);--off:1s;margin-top:16px;font-size:30px"><span>“Everything is normal.”</span></p>
+      </div>
+    </div>
+    <div class="fade-up" style="--at:var(--c3);margin-top:60px;display:flex;flex-direction:column;gap:34px">
+      <div style="display:flex;align-items:center;gap:26px">
+        <p style="width:250px;font-size:28px">Looks accurate</p>
+        <div class="meter"><b class="grow-x" style="--at:var(--c3);--off:.2s;width:80%;background:var(--lime);box-shadow:0 0 16px var(--lime)"></b></div>
+        <p class="big lime glow" style="font-size:44px;width:120px"><span data-count="80" data-cue="3" data-off=".2" data-suf="%"></span></p>
+      </div>
+      <div style="display:flex;align-items:center;gap:26px">
+        <p style="width:250px;font-size:28px">Attacks caught</p>
+        <div class="meter"><b style="width:1.2%;background:var(--red);box-shadow:0 0 16px var(--red)"></b></div>
+        <p class="big red glow flick" style="--at:var(--c3);--off:.9s;font-size:44px;width:120px">0%</p>
+      </div>
+    </div>
+    <div class="abs pop" style="--at:var(--c3);--off:1.8s;left:250px;top:470px"><p class="stamp big">ACCURACY LIES</p></div>
+  </div>
+</div>
+<script src="../neon.js"></script>
+<script>
+  const field = document.getElementById('field');
+  let h = '';
+  const cols = 28, rows = 12, gap = 27;
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    if (r === 6 && c === 19) continue;
+    const d = (c * 0.018 + r * 0.03).toFixed(3);
+    h += `<i class="pop" style="--at:var(--c0);--off:${d}s;left:${c * gap}px;top:${r * gap}px"></i>`;
+  }
+  h += `<i class="pop" style="--at:var(--c0);--off:.4s;left:${19 * gap}px;top:${6 * gap}px"></i>`;
+  h += `<i class="pop" style="--at:var(--c1);left:${19 * gap - 3}px;top:${6 * gap - 3}px;width:16px;height:16px;opacity:1;background:var(--mag);box-shadow:0 0 12px var(--mag),0 0 30px var(--mag)"></i>`;
+  for (let k = 0; k < 3; k++) h += `<div class="ring mag" style="--at:var(--c1);--off:${(k * .66).toFixed(2)}s;left:${19 * gap - 25}px;top:${6 * gap - 25}px;width:60px;height:60px"></div>`;
+  field.innerHTML = h;
+</script>
+</body></html>

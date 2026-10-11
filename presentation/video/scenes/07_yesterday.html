@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Yesterday's attacks</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="../neon.css">
+<style>
+  .row { position: absolute; left: 120px; width: 1680px; height: 80px; display: flex; align-items: center; gap: 30px; }
+  .row .name { width: 470px; font-size: 32px; line-height: 1.15; }
+  .row .name small { display: block; font-size: 22px; color: var(--muted); margin-top: 4px; }
+  .row .track { width: 960px; height: 60px; border-radius: 12px; background: rgba(120, 160, 255, .08); position: relative; }
+  .row .bar { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 12px; }
+  .row .num { font-size: 60px; }
+  .tl { position: absolute; top: 668px; height: 110px; border-radius: 16px; border: 2px solid; display: flex; align-items: center; justify-content: center;
+    gap: 14px; font-family: 'JetBrains Mono', monospace; font-size: 26px; letter-spacing: 2px; }
+  .tl small { font-size: 20px; letter-spacing: 1px; font-family: 'IBM Plex Sans', sans-serif; }
+</style></head>
+<body>
+<div class="stage">
+  <div class="hd">
+    <p class="kicker fade-up" style="--off:.15s">06 · THE MOST IMPORTANT RESULT</p>
+    <h1 class="fade-up" style="--off:.3s">Same model, three ways to test it</h1>
+  </div>
+
+  <div class="row fade-up" style="--at:var(--c1);top:300px"><p class="name">Random shuffle<small>flows of one attack on both sides</small></p>
+    <div class="track"><div class="bar grow-x" style="--at:var(--c1);--off:.2s;width:97.3%;background:var(--cyan);box-shadow:0 0 18px var(--cyan)"></div></div>
+    <p class="num big cyan glow"><span data-count="0.973" data-dec="3" data-cue="1" data-off=".2"></span></p></div>
+  <div class="row fade-up" style="--at:var(--c2);top:420px"><p class="name">Grouped by session<small>each attack session on one side</small></p>
+    <div class="track"><div class="bar grow-x" style="--at:var(--c2);--off:.2s;width:88.8%;background:var(--blue);box-shadow:0 0 18px var(--blue)"></div></div>
+    <p class="num big blue glow"><span data-count="0.888" data-dec="3" data-cue="2" data-off=".2"></span></p></div>
+  <div class="row fade-up" style="--at:var(--c3);top:540px"><p class="name">Past → future<small>train on earlier days, test on later ones</small></p>
+    <div class="track"><div class="bar grow-x" style="--at:var(--c3);--off:.2s;width:18%;background:var(--red);box-shadow:0 0 22px var(--red)"></div></div>
+    <p class="num big red glow flick" style="--at:var(--c3);--off:.3s"><span data-count="0.180" data-dec="3" data-cue="3" data-off=".2" data-from="0.9"></span></p></div>
+  <p class="abs label fade-in" style="--at:var(--c1);--off:.6s;left:620px;top:262px">macro-F1 on CIC-IDS2017</p>
+
+  <div class="tl cyan fade-up" style="--at:var(--c4);left:120px;width:1250px;border-color:var(--cyan);background:rgba(59,240,255,.07);box-shadow:0 0 18px -4px var(--cyan)">
+    MON · TUE · WED · THU <small style="color:var(--text)">— trained on these days</small></div>
+  <div class="tl mag fade-up" style="--at:var(--c4);--off:.8s;left:1400px;width:400px;border-color:var(--mag);background:rgba(255,79,216,.08);box-shadow:0 0 22px -2px var(--mag);flex-direction:column;gap:6px">
+    <div style="display:flex;gap:12px;align-items:center">FRI
+      <span class="neon" style="width:40px;height:40px"><i data-icon="ghost" style="display:block;width:40px;height:40px"></i></span>
+      <span class="neon" style="width:40px;height:40px"><i data-icon="ghost" style="display:block;width:40px;height:40px"></i></span>
+      <span class="neon" style="width:40px;height:40px"><i data-icon="ghost" style="display:block;width:40px;height:40px"></i></span></div>
+    <small style="color:var(--text)">DDoS · PortScan · Botnet: never seen</small></div>
+
+  <p class="abs big mag glow fade-up" style="--at:var(--c4);--off:4.8s;left:120px;top:812px;width:1680px;font-size:50px;text-align:center">
+    A supervised detector only knows yesterday’s attacks.</p>
+</div>
+<script src="../neon.js"></script>
+</body></html>

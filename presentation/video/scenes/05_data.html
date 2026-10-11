@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Real data</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="../neon.css">
+<style>
+  .day { position: absolute; top: 300px; width: 196px; height: 360px; padding: 18px 14px; border-radius: 18px; border: 2px solid var(--line);
+    background: var(--panel); display: flex; flex-direction: column; gap: 12px; }
+  .day h3 { font-family: 'JetBrains Mono', monospace; font-size: 26px; letter-spacing: 3px; color: var(--cyan); text-align: center;
+    padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .atk { font-size: 21px; line-height: 1.2; padding: 9px 12px; border-radius: 10px; border: 2px solid var(--mag); color: var(--text);
+    background: rgba(255, 79, 216, .1); box-shadow: 0 0 12px -3px var(--mag); }
+  .ok { border-color: var(--cyan); background: rgba(59, 240, 255, .08); box-shadow: 0 0 12px -3px var(--cyan); color: var(--muted); }
+  .stat p.big { font-size: 92px; }
+  .fix { position: absolute; top: 770px; width: 540px; height: 120px; display: flex; align-items: center; gap: 22px; padding: 0 26px; }
+  .fix .ic-wrap { width: 70px; height: 70px; flex: none; }
+  .fix p { font-size: 26px; line-height: 1.25; }
+  .fix .done { margin-left: auto; width: 52px; height: 52px; flex: none; }
+</style></head>
+<body>
+<div class="stage">
+  <div class="hd">
+    <p class="kicker fade-up" style="--off:.15s">04 · REAL TRAFFIC</p>
+    <h1 class="fade-up" style="--off:.3s">Tested on CIC-IDS2017</h1>
+  </div>
+  <p class="abs chip cyan fade-up" style="--at:var(--c0);--off:.8s;left:960px;top:118px"><i data-icon="globe" style="width:34px;height:34px"></i><span>Canadian Institute for Cybersecurity</span></p>
+
+  <div class="day fade-up" style="--at:var(--c1);left:120px"><h3>MON</h3><p class="atk ok fade-up" style="--at:var(--c1);--off:.9s">normal traffic only</p></div>
+  <div class="day fade-up" style="--at:var(--c1);--off:.15s;left:330px"><h3>TUE</h3>
+    <p class="atk fade-up" style="--at:var(--c1);--off:1.1s">FTP brute force</p><p class="atk fade-up" style="--at:var(--c1);--off:1.2s">SSH brute force</p></div>
+  <div class="day fade-up" style="--at:var(--c1);--off:.3s;left:540px"><h3>WED</h3>
+    <p class="atk fade-up" style="--at:var(--c1);--off:1.4s">DoS ×4</p><p class="atk fade-up" style="--at:var(--c1);--off:1.5s">Heartbleed</p></div>
+  <div class="day fade-up" style="--at:var(--c1);--off:.45s;left:750px"><h3>THU</h3>
+    <p class="atk fade-up" style="--at:var(--c1);--off:1.7s">Web attacks</p><p class="atk fade-up" style="--at:var(--c1);--off:1.8s">Infiltration</p></div>
+  <div class="day fade-up" style="--at:var(--c1);--off:.6s;left:960px"><h3>FRI</h3>
+    <p class="atk fade-up" style="--at:var(--c1);--off:2s">Botnet</p><p class="atk fade-up" style="--at:var(--c1);--off:2.1s">PortScan</p><p class="atk fade-up" style="--at:var(--c1);--off:2.2s">DDoS</p></div>
+
+  <div class="abs stat" style="left:1260px;top:290px;display:flex;flex-direction:column;gap:22px">
+    <div class="fade-up" style="--at:var(--c1);--off:.4s"><p class="big cyan glow"><span data-count="2.8" data-dec="1" data-cue="1" data-off=".4" data-dur="2"></span> M</p><p class="label">network flows, 5 working days</p></div>
+    <div class="fade-up" style="--at:var(--c2)"><p class="big vio glow"><span data-count="9" data-cue="2" data-dur="1"></span></p><p class="label">attack families</p></div>
+    <div class="fade-up" style="--at:var(--c2);--off:1.6s"><p class="big mag glow" style="font-size:80px"><span data-count="45000" data-cue="2" data-off="1.6" data-dur="1.6"></span> : 1</p><p class="label">largest vs. smallest family</p></div>
+  </div>
+
+  <div class="card fix fade-up amber" style="--at:var(--c3);left:120px">
+    <div class="ic-wrap amber neon"><div data-icon="clock" style="width:70px;height:70px"></div></div>
+    <p>12-hour clock,<br><span class="muted">no AM / PM</span></p>
+    <div class="done lime neon"><div data-icon="check" class="draw-all" style="--at:var(--c3);--off:1.6s;width:52px;height:52px"></div></div>
+  </div>
+  <div class="card fix fade-up" style="--at:var(--c3);--off:.3s;left:690px">
+    <div class="ic-wrap amber neon"><div data-icon="rows" style="width:70px;height:70px"></div></div>
+    <p><span data-count="288602" data-cue="3" data-off=".4" data-dur="2.4"></span><br><span class="muted">empty rows</span></p>
+    <div class="done lime neon"><div data-icon="check" class="draw-all" style="--at:var(--c3);--off:4.6s;width:52px;height:52px"></div></div>
+  </div>
+  <div class="card fix fade-up" style="--at:var(--c3);--off:.6s;left:1260px">
+    <div class="ic-wrap amber neon"><div data-icon="copies" style="width:70px;height:70px"></div></div>
+    <p><span data-count="308218" data-cue="3" data-off=".7" data-dur="2.4"></span><br><span class="muted">duplicate flows</span></p>
+    <div class="done lime neon"><div data-icon="check" class="draw-all" style="--at:var(--c3);--off:7.2s;width:52px;height:52px"></div></div>
+  </div>
+  <p class="abs kicker fade-up" style="--at:var(--c3);--off:.9s;left:120px;top:722px;color:var(--lime);text-shadow:0 0 12px rgba(108,255,158,.6)">REPAIRED AUTOMATICALLY</p>
+</div>
+<script src="../neon.js"></script>
+</body></html>

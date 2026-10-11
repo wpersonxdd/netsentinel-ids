@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Console</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="../neon.css">
+<style>
+  .layer { position: absolute; left: 0; top: 0; width: 1152px; height: 648px; }
+  .side { position: absolute; left: 1330px; top: 280px; width: 470px; display: flex; flex-direction: column; gap: 14px; }
+  .side .big { font-size: 96px; }
+  .side .arrow { width: 56px; height: 56px; transform: rotate(90deg); color: var(--muted); margin-left: 6px; }
+</style></head>
+<body>
+<div class="stage">
+  <div class="hd">
+    <p class="kicker fade-up" style="--off:.15s">09 · ANALYST CONSOLE</p>
+    <h1 class="fade-up" style="--off:.3s">From thousands of alerts to a short queue</h1>
+  </div>
+
+  <div class="screen zoom-in" style="--at:var(--c0);left:120px;top:282px;width:1152px;height:648px">
+    <div class="layer exit" style="--out:var(--c3)"><div id="camA" class="layer">
+      <img src="../../../docs/media/screens/console_queue.png" alt="">
+      <div class="hl pop" style="--at:var(--c1);left:511px;top:117px;width:90px;height:58px"></div>
+      <div class="hl pop" style="--at:var(--c2);left:217px;top:117px;width:72px;height:58px;border-color:var(--cyan);box-shadow:0 0 16px var(--cyan),0 0 16px var(--cyan) inset"></div>
+      <div class="hl pop" style="--at:var(--c2);--off:1.6s;left:224px;top:352px;width:884px;height:220px;border-color:var(--cyan);box-shadow:0 0 16px var(--cyan),0 0 16px var(--cyan) inset"></div>
+    </div></div>
+    <div id="camB" class="layer fade-in" style="--at:var(--c3)">
+      <img src="../../../docs/media/screens/console_scored.png" alt="">
+      <div class="hl pop" style="--at:var(--c3);--off:.6s;left:12px;top:350px;width:156px;height:46px;border-color:var(--lime);box-shadow:0 0 16px var(--lime),0 0 16px var(--lime) inset"></div>
+      <div class="hl pop" style="--at:var(--c3);--off:2.4s;left:513px;top:117px;width:60px;height:58px"></div>
+      <div class="hl pop" style="--at:var(--c3);--off:3.6s;left:219px;top:117px;width:56px;height:58px;border-color:var(--cyan);box-shadow:0 0 16px var(--cyan),0 0 16px var(--cyan) inset"></div>
+      <div class="hl pop" style="--at:var(--c3);--off:4.8s;left:367px;top:117px;width:72px;height:58px;border-color:var(--red);box-shadow:0 0 16px var(--red),0 0 16px var(--red) inset"></div>
+    </div>
+  </div>
+
+  <div class="side exit" style="--out:var(--c3)">
+    <div class="fade-up" style="--at:var(--c1)"><p class="big mag glow"><span data-count="22601" data-cue="1" data-dur="1.6"></span></p><p class="label">flow alerts</p></div>
+    <div class="arrow fade-in" style="--at:var(--c2)"><div data-icon="arrow" style="width:56px;height:56px"></div></div>
+    <div class="fade-up" style="--at:var(--c2);--off:.3s"><p class="big cyan glow"><span data-count="483" data-cue="2" data-off=".3" data-dur="1.4"></span></p><p class="label">incidents: family + shared endpoint + time</p></div>
+    <p class="chip mag pop" style="--at:var(--c2);--off:3.2s;align-self:flex-start;margin-top:16px;font-size:30px"><b>47×</b><span>fewer items to open</span></p>
+  </div>
+  <div class="side">
+    <p class="chip lime fade-up" style="--at:var(--c3);--off:.4s;align-self:flex-start">new traffic <span>5,000 flows</span></p>
+    <div class="fade-up" style="--at:var(--c3);--off:2.2s"><p class="big mag glow" style="font-size:80px"><span data-count="952" data-cue="3" data-off="2.2" data-dur="1"></span></p><p class="label">alerts</p></div>
+    <div class="fade-up" style="--at:var(--c3);--off:3.4s"><p class="big cyan glow" style="font-size:80px"><span data-count="60" data-cue="3" data-off="3.4" data-dur="1"></span></p><p class="label">incidents</p></div>
+    <div class="fade-up" style="--at:var(--c3);--off:4.6s"><p class="big red glow" style="font-size:80px"><span data-count="14" data-cue="3" data-off="4.6" data-dur="1"></span></p><p class="label">top priority (P1)</p></div>
+  </div>
+</div>
+<script src="../neon.js"></script>
+<script>
+  const c = id => cueTime(id);
+  camera(document.getElementById('camA'), 1152, 648, [
+    { t: 0, s: 1, x: 576, y: 324 },
+    { t: c(1), s: 1.9, x: 560, y: 150 },
+    { t: c(2), s: 1.6, x: 420, y: 200 },
+    { t: c(2) + 1.6, s: 1, x: 576, y: 324 },
+  ]);
+  camera(document.getElementById('camB'), 1152, 648, [
+    { t: 0, s: 1.7, x: 120, y: 380 },
+    { t: c(3) + 1.6, s: 1.7, x: 420, y: 150 },
+    { t: c(3) + 5.6, s: 1, x: 576, y: 324 },
+  ]);
+</script>
+</body></html>

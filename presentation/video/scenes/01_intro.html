@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Intro</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="../neon.css">
+<style>
+  #net path { stroke: rgba(90, 150, 255, .38); stroke-width: 1.6; fill: none; }
+  #net circle { fill: #0A1838; stroke: var(--cyan); stroke-width: 2.5; filter: drop-shadow(0 0 6px var(--cyan)); }
+  .hud { left: 120px; top: 84px; }
+  .title { font-size: 168px; letter-spacing: -2px; }
+</style></head>
+<body>
+<div class="stage">
+  <svg id="net" class="abs" width="1920" height="1080" style="left:0;top:0"></svg>
+  <div id="packets" class="abs fade-in" style="--off:.8s;left:0;top:0;width:1920px;height:1080px"></div>
+  <div id="evil" class="abs" style="left:0;top:0;width:1920px;height:1080px"></div>
+
+  <div class="abs exit" style="--out:var(--c2)">
+    <div class="abs hud fade-up" style="--off:.3s;width:900px">
+      <p class="kicker"><span class="blink" style="color:var(--mag)">●</span> LIVE NETWORK TRAFFIC</p>
+      <p class="big" style="font-size:96px;margin-top:14px"><span data-count="1284903" data-cue="0" data-off="-.6" data-dur="9" class="cyan glow"></span></p>
+      <p class="label" style="margin-top:6px">connections seen</p>
+    </div>
+  </div>
+
+  <div class="abs fade-in" style="--at:var(--c2);--off:-.2s;inset:0;background:radial-gradient(ellipse 60% 55% at center, rgba(3,8,23,.94) 0%, rgba(3,8,23,.75) 55%, rgba(3,8,23,.25) 100%)"></div>
+  <div class="abs" style="left:0;top:190px;width:1920px;display:flex;flex-direction:column;align-items:center;gap:22px">
+    <div class="cyan neon" style="width:200px;height:200px"><div data-icon="logo" class="draw-all" style="--at:var(--c2);width:200px;height:200px"></div></div>
+    <p class="big title flick" style="--at:var(--c2);--off:.9s;text-shadow:0 0 18px rgba(59,240,255,.8),0 0 60px rgba(77,139,255,.6)">NetSentinel</p>
+    <p class="fade-up" style="--at:var(--c2);--off:1.6s;font-size:40px;color:var(--text)">Finding rare network attacks, <span class="mag glow">including ones nobody has seen yet</span></p>
+    <p class="chip cyan mono fade-up" style="--at:var(--c2);--off:2.4s;margin-top:18px">DataNova 2026 <span>·</span> DN-CY-01</p>
+  </div>
+</div>
+<script src="../neon.js"></script>
+<script>
+  const svg = document.getElementById('net'), pk = document.getElementById('packets'), evil = document.getElementById('evil');
+  const N = [];
+  for (let tries = 0; N.length < 34 && tries < 5000; tries++) {
+    const x = 70 + rnd() * 1780, y = 70 + rnd() * 940;
+    if (N.every(n => Math.hypot(n[0] - x, n[1] - y) > 175)) N.push([x, y]);
+  }
+  const E = [];
+  N.forEach((a, i) => {
+    N.map((b, j) => [Math.hypot(a[0] - b[0], a[1] - b[1]), j]).filter(d => d[1] !== i).sort((p, q) => p[0] - q[0]).slice(0, 2)
+      .forEach(([, j]) => { if (!E.some(e => (e[0] === i && e[1] === j) || (e[0] === j && e[1] === i))) E.push([i, j]); });
+  });
+  let s = '';
+  E.forEach((e, k) => {
+    const [a, b] = [N[e[0]], N[e[1]]];
+    s += `<path pathLength="1" class="draw" style="--off:${(k * 0.025).toFixed(2)}s" d="M${a[0].toFixed(0)} ${a[1].toFixed(0)} L${b[0].toFixed(0)} ${b[1].toFixed(0)}"/>`;
+  });
+  N.forEach((n, k) => { s += `<circle class="pop" style="--off:${(0.2 + k * 0.03).toFixed(2)}s;transform-box:fill-box;transform-origin:center" cx="${n[0].toFixed(0)}" cy="${n[1].toFixed(0)}" r="7"/>`; });
+  svg.innerHTML = s;
+
+  const packet = (a, b, color, dur, delay, size) =>
+    `<i class="travel dot" style="color:${color};offset-path:path('M${a[0].toFixed(0)} ${a[1].toFixed(0)} L${b[0].toFixed(0)} ${b[1].toFixed(0)}');` +
+    `animation-duration:${dur.toFixed(2)}s;animation-delay:${delay}${size ? `;width:${size}px;height:${size}px;margin:-${size / 2}px 0 0 -${size / 2}px` : ''}"></i>`;
+  let p = '';
+  E.forEach(e => {
+    const fwd = rnd() < .5, a = N[e[fwd ? 0 : 1]], b = N[e[fwd ? 1 : 0]];
+    p += packet(a, b, 'var(--cyan)', 1.8 + rnd() * 2.4, `-${(rnd() * 4).toFixed(2)}s`);
+    if (rnd() < .5) p += packet(b, a, 'var(--blue)', 2.2 + rnd() * 2.4, `-${(rnd() * 4).toFixed(2)}s`);
+  });
+  pk.innerHTML = p;
+
+  // the attack: magenta packets converging on one node, with pulse rings
+  let k = 0, best = 1e9;
+  N.forEach((n, i) => { const d = Math.hypot(n[0] - 1430, n[1] - 330); if (d < best) { best = d; k = i; } });
+  const T = N[k];
+  let ev = `<div class="abs fade-in" style="--at:var(--c1)">`;
+  E.filter(e => e[0] === k || e[1] === k).forEach(e => {
+    const from = N[e[0] === k ? e[1] : e[0]];
+    ev += packet(from, T, 'var(--mag)', 1.6, `calc(var(--c1) + ${(rnd()).toFixed(2)}s)`, 16);
+  });
+  ev += `</div>`;
+  ev += `<div class="abs pop mag" style="--at:var(--c1);left:${T[0] - 22}px;top:${T[1] - 22}px;width:44px;height:44px;border-radius:50%;background:var(--mag);box-shadow:0 0 20px var(--mag),0 0 60px var(--mag)"></div>`;
+  for (let r = 0; r < 3; r++) ev += `<div class="ring mag" style="--at:var(--c1);--off:${(r * 0.66).toFixed(2)}s;left:${T[0] - 60}px;top:${T[1] - 60}px;width:120px;height:120px"></div>`;
+  ev += `<p class="abs chip mag mono fade-up" style="--at:var(--c1);--off:.5s;left:${T[0] + 50}px;top:${T[1] - 26}px">attack</p>`;
+  evil.innerHTML = ev;
+</script>
+</body></html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Four problems</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="../neon.css">
+<style>
+  .q { width: 810px; height: 290px; padding: 38px 44px; display: flex; gap: 40px; align-items: center; }
+  .q .icon { width: 150px; height: 150px; flex: none; }
+  .q .prob { font-family: 'JetBrains Mono', monospace; font-size: 22px; letter-spacing: 3px; color: var(--muted); }
+  .q h2 { font-family: 'Space Grotesk', Arial, sans-serif; font-size: 42px; line-height: 1.1; margin: 8px 0 16px; }
+  .q .ans { font-size: 28px; line-height: 1.35; }
+  .q .ans b { font-weight: 600; }
+  .lit-border { position: absolute; inset: -2px; border-radius: 22px; border: 2px solid currentColor;
+    box-shadow: 0 0 22px -2px currentColor, 0 0 0 1px currentColor inset; }
+</style></head>
+<body>
+<div class="stage">
+  <div class="hd">
+    <p class="kicker fade-up" style="--off:.15s">02 · THE APPROACH</p>
+    <h1 class="fade-up" style="--off:.3s">Four problems, four answers</h1>
+  </div>
+
+  <div class="card q fade-in cyan" style="--at:var(--c0);left:120px;top:300px">
+    <div class="lit-border fade-in" style="--at:var(--c1)"></div>
+    <div class="icon neon"><div data-icon="scales" class="draw-all" style="--at:var(--c1);width:150px;height:150px"></div></div>
+    <div class="fade-up" style="--at:var(--c1);--off:.2s"><p class="prob">PROBLEM 1</p><h2 style="color:var(--text)">Attacks are rare</h2>
+      <p class="ans cyan">→ <b>Rebalanced training</b><span style="color:var(--text)">: rare attacks shown more often</span></p></div>
+  </div>
+  <div class="card q fade-in mag" style="--at:var(--c0);--off:.1s;left:990px;top:300px">
+    <div class="lit-border fade-in" style="--at:var(--c2)"></div>
+    <div class="icon neon"><div data-icon="ghost" class="draw-all" style="--at:var(--c2);width:150px;height:150px"></div></div>
+    <div class="fade-up" style="--at:var(--c2);--off:.2s"><p class="prob">PROBLEM 2</p><h2 style="color:var(--text)">New attacks appear</h2>
+      <p class="ans mag">→ <b>Novelty detector</b><span style="color:var(--text)">: knows normal traffic, flags the unfamiliar</span></p></div>
+  </div>
+  <div class="card q fade-in vio" style="--at:var(--c0);--off:.2s;left:120px;top:630px">
+    <div class="lit-border fade-in" style="--at:var(--c3)"></div>
+    <div class="icon neon"><div data-icon="wave" class="draw-all" style="--at:var(--c3);width:150px;height:150px"></div></div>
+    <div class="fade-up" style="--at:var(--c3);--off:.2s"><p class="prob">PROBLEM 3</p><h2 style="color:var(--text)">Tactics change</h2>
+      <p class="ans vio">→ <b>Drift monitor</b><span style="color:var(--text)">: notices the shift, asks for retraining</span></p></div>
+  </div>
+  <div class="card q fade-in lime" style="--at:var(--c0);--off:.3s;left:990px;top:630px">
+    <div class="lit-border fade-in" style="--at:var(--c4)"></div>
+    <div class="icon neon"><div data-icon="bell" class="draw-all shake" style="--at:var(--c4);width:150px;height:150px"></div></div>
+    <div class="fade-up" style="--at:var(--c4);--off:.2s"><p class="prob">PROBLEM 4</p><h2 style="color:var(--text)">Analysts drown in alerts</h2>
+      <p class="ans lime">→ <b>Explained incidents</b><span style="color:var(--text)">, and every decision teaches the model</span></p></div>
+  </div>
+</div>
+<script src="../neon.js"></script>
+</body></html>

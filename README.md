@@ -35,7 +35,7 @@ NetSentinel is an end-to-end intrusion detection system for labelled network-flo
 
 | | |
 |---|---|
-| 🎬 **Demo video** (≈ 7 min, narrated, English captions) | [`docs/media/NetSentinel_demo.mp4`](docs/media/NetSentinel_demo.mp4) · captions [`NetSentinel_demo.srt`](docs/media/NetSentinel_demo.srt) |
+| 🎬 **Demo video** (≈ 6 min, animated, narrated, English captions) | [`docs/media/NetSentinel_demo.mp4`](docs/media/NetSentinel_demo.mp4) · captions [`NetSentinel_demo.srt`](docs/media/NetSentinel_demo.srt) |
 | 📑 **Slides** (14 slides, PDF) | [`docs/NetSentinel_slides.pdf`](docs/NetSentinel_slides.pdf) · single images in [`docs/media/slides/`](docs/media/slides) |
 | 🖥️ **Console screenshots** | [`docs/media/screens/`](docs/media/screens) |
 
@@ -224,7 +224,7 @@ scripts/                    novelty-detector comparison, demo traffic, slide/vid
 tests/                      unit + end-to-end tests
 reports/                    synthetic run: REPORT.md, figures/, results/*.json (generated)
 reports/cicids2017/         real-traffic run: REPORT.md, figures/, results/*.json (generated)
-presentation/               slide sources (one HTML file per slide) and the video narration script
+presentation/               slide sources (one HTML file per slide), animated video scenes and narration
 docs/                       methodology, data guide, slides PDF, demo video, submission checklist
 ```
 
@@ -255,13 +255,14 @@ A GitHub Actions workflow is included as [`.github/ci.yml`](.github/ci.yml); mov
 to run the tests on every push.
 
 Regenerate the slides and the video (optional tools: `pip install playwright imageio-ffmpeg`; the narration uses
-Windows text-to-speech):
+Windows text-to-speech). The video is a set of animated HTML scenes in [`presentation/video/`](presentation/video)
+rendered frame by frame, with the narration in [`script.json`](presentation/video/script.json):
 
 ```bash
 python scripts/make_media.py slides --deck presentation/project --out docs/media/slides --pdf docs/NetSentinel_slides.pdf
 ```
 ```bash
-python scripts/make_media.py video --script presentation/narration.json --out docs/media/NetSentinel_demo.mp4
+python scripts/make_media.py motion --out docs/media/NetSentinel_demo.mp4
 ```
 
 ## Docker
